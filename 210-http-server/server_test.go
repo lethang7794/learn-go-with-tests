@@ -87,7 +87,7 @@ func TestLeague(t *testing.T) {
 		handler := &PlayerServer{store}
 
 		response := httptest.NewRecorder()
-		request, _ := http.NewRequest(http.MethodGet, "league", nil)
+		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
 		handler.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusOK)
@@ -95,12 +95,12 @@ func TestLeague(t *testing.T) {
 }
 
 func newGetScoreRequest(name string) *http.Request {
-	request, _ := http.NewRequest(http.MethodGet, "players/"+name, nil)
+	request, _ := http.NewRequest(http.MethodGet, "/players/"+name, nil)
 	return request
 }
 
 func newPostWinRequest(name string) *http.Request {
-	request, _ := http.NewRequest(http.MethodPost, "players/"+name, nil)
+	request, _ := http.NewRequest(http.MethodPost, "/players/"+name, nil)
 	return request
 }
 
