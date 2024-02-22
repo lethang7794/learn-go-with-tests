@@ -11,6 +11,7 @@ func TestGETPlayers(t *testing.T) {
 		scores: map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
+			"Beta":   0,
 		},
 	}
 	handler := &PlayerHandler{store}
@@ -42,6 +43,17 @@ func TestGETPlayers(t *testing.T) {
 		handler.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusNotFound)
+	})
+
+	t.Run("return 200 on player with 0 score", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		request := newGetScoreRequest("Beta")
+
+		handler.ServeHTTP(response, request)
+
+		assertResponseCode(t, response.Code, http.StatusOK)
+		assertResponseBody(t, response.Body.String(), "0")
+
 	})
 }
 
