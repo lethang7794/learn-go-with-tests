@@ -82,11 +82,6 @@ func TestStoreWins(t *testing.T) {
 	})
 }
 
-type Player struct {
-	Name  string
-	Score int
-}
-
 func TestLeague(t *testing.T) {
 	t.Run("return 200 on /league", func(t *testing.T) {
 		store := &StubPlayerStore{}
