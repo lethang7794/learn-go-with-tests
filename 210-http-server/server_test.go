@@ -7,7 +7,12 @@ import (
 )
 
 func TestGETPlayers(t *testing.T) {
-	store := &StubPlayerStore{}
+	store := &StubPlayerStore{
+		scores: map[string]int{
+			"Pepper": 20,
+			"Floyd":  10,
+		},
+	}
 	handler := &PlayerHandler{store}
 
 	t.Run("return Pepper score", func(t *testing.T) {
