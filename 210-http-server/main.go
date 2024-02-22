@@ -26,10 +26,7 @@ func NewInMemoryPlayerStore() *InMemoryPlayerStore {
 
 func (s *InMemoryPlayerStore) GetPlayerScore(player string) (score int, ok bool) {
 	score, ok = s.scores[player]
-	if ok {
-		return score, true
-	}
-	return score, false
+	return score, ok
 }
 
 func (s *InMemoryPlayerStore) RecordWin(player string) {
