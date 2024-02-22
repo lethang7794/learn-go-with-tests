@@ -13,22 +13,25 @@ type PlayerServer struct {
 func (p *PlayerServer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	mux := http.NewServeMux()
 
-	mux.Handle("/players/", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		player := strings.TrimPrefix(request.URL.Path, "/players/")
-
-		if request.Method == http.MethodGet {
-			p.ShowScore(writer, player)
-		}
-		if request.Method == http.MethodPost {
-			p.ProcessWin(writer, player)
-		}
-	}))
-
-	mux.HandleFunc("/league", func(writer http.ResponseWriter, request *http.Request) {
-		writer.WriteHeader(http.StatusOK)
-	})
+	mux.HandleFunc("/players/", p.PlayersHandler)
+	mux.HandleFunc("/league", p.LeagueHandler)
 
 	mux.ServeHTTP(writer, request)
+}
+
+func (p *PlayerServer) LeagueHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.WriteHeader(http.StatusOK)
+}
+
+func (p *PlayerServer) PlayersHandler(writer http.ResponseWriter, request *http.Request) {
+	player := strings.TrimPrefix(request.URL.Path, "/players/")
+
+	if request.Method == http.MethodGet {
+		p.ShowScore(writer, player)
+	}
+	if request.Method == http.MethodPost {
+		p.ProcessWin(writer, player)
+	}
 }
 
 func (p *PlayerServer) ShowScore(writer http.ResponseWriter, player string) {
