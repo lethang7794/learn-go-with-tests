@@ -30,9 +30,9 @@ func GetPlayerScore(player string) string {
 }
 
 type StubPlayerStore struct {
+	scores map[string]int
 }
 
 func (s *StubPlayerStore) GetPlayerScore(player string) int {
-	//TODO implement me
-	panic("implement me")
+	return s.scores[player]
 }
