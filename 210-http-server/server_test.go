@@ -53,12 +53,39 @@ func TestGETPlayers(t *testing.T) {
 
 		assertResponseCode(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "0")
+	})
 
+}
+
+func TestStoreWins(t *testing.T) {
+	store := &StubPlayerStore{
+		scores: map[string]int{},
+	}
+	handler := &PlayerHandler{store}
+
+	t.Run("record win when POST a player", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		request := newPostWinRequest("Alpha")
+
+		handler.ServeHTTP(response, request)
+
+		assertResponseCode(t, response.Code, http.StatusAccepted)
+
+		got := len(store.winCalls)
+		want := 1
+		if got != want {
+			t.Errorf("wrong number of call to RecordWin: got %#v, want %#v", got, want)
+		}
 	})
 }
 
 func newGetScoreRequest(name string) *http.Request {
 	request, _ := http.NewRequest(http.MethodGet, "players/"+name, nil)
+	return request
+}
+
+func newPostWinRequest(name string) *http.Request {
+	request, _ := http.NewRequest(http.MethodPost, "players/"+name, nil)
 	return request
 }
 

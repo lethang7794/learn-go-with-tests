@@ -38,7 +38,8 @@ type PlayerStore interface {
 }
 
 type StubPlayerStore struct {
-	scores map[string]int
+	scores   map[string]int
+	winCalls []string
 }
 
 func (s *StubPlayerStore) GetPlayerScore(player string) (score int, ok bool) {
@@ -47,4 +48,8 @@ func (s *StubPlayerStore) GetPlayerScore(player string) (score int, ok bool) {
 		return score, true
 	}
 	return score, false
+}
+
+func (s *StubPlayerStore) RecordWin(name string) {
+	s.winCalls = append(s.winCalls, name)
 }
