@@ -81,6 +81,19 @@ func TestStoreWins(t *testing.T) {
 	})
 }
 
+func TestLeague(t *testing.T) {
+	t.Run("", func(t *testing.T) {
+		store := &StubPlayerStore{}
+		handler := &PlayerHandler{store}
+
+		response := httptest.NewRecorder()
+		request, _ := http.NewRequest(http.MethodGet, "league", nil)
+		handler.ServeHTTP(response, request)
+
+		assertResponseCode(t, response.Code, http.StatusOK)
+	})
+}
+
 func newGetScoreRequest(name string) *http.Request {
 	request, _ := http.NewRequest(http.MethodGet, "players/"+name, nil)
 	return request
