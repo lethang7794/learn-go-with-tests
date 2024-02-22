@@ -7,8 +7,8 @@ import (
 
 func main() {
 	store := NewInMemoryPlayerStore()
-	handler := &PlayerServer{store}
-	err := http.ListenAndServe(":5000", handler)
+	server := NewPlayerServer(store)
+	err := http.ListenAndServe(":5000", server)
 	if err != nil {
 		log.Fatal(err)
 	}

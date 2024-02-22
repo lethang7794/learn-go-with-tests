@@ -14,13 +14,13 @@ func TestGETPlayers(t *testing.T) {
 			"Beta":   0,
 		},
 	}
-	handler := &PlayerServer{store}
+	server := NewPlayerServer(store)
 
 	t.Run("return Pepper score", func(t *testing.T) {
 		response := httptest.NewRecorder()
 		request := newGetScoreRequest("Pepper")
 
-		handler.ServeHTTP(response, request)
+		server.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "20")
@@ -30,7 +30,7 @@ func TestGETPlayers(t *testing.T) {
 		response := httptest.NewRecorder()
 		request := newGetScoreRequest("Floyd")
 
-		handler.ServeHTTP(response, request)
+		server.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "10")
@@ -40,7 +40,7 @@ func TestGETPlayers(t *testing.T) {
 		response := httptest.NewRecorder()
 		request := newGetScoreRequest("Alpha")
 
-		handler.ServeHTTP(response, request)
+		server.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusNotFound)
 	})
@@ -49,7 +49,7 @@ func TestGETPlayers(t *testing.T) {
 		response := httptest.NewRecorder()
 		request := newGetScoreRequest("Beta")
 
-		handler.ServeHTTP(response, request)
+		server.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "0")
@@ -61,14 +61,14 @@ func TestStoreWins(t *testing.T) {
 	store := &StubPlayerStore{
 		scores: map[string]int{},
 	}
-	handler := &PlayerServer{store}
+	server := NewPlayerServer(store)
 
 	t.Run("record win when POST a player", func(t *testing.T) {
 		player := "Alpha"
 		response := httptest.NewRecorder()
 		request := newPostWinRequest(player)
 
-		handler.ServeHTTP(response, request)
+		server.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusAccepted)
 
@@ -84,11 +84,11 @@ func TestStoreWins(t *testing.T) {
 func TestLeague(t *testing.T) {
 	t.Run("", func(t *testing.T) {
 		store := &StubPlayerStore{}
-		handler := &PlayerServer{store}
+		server := NewPlayerServer(store)
 
 		response := httptest.NewRecorder()
 		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
-		handler.ServeHTTP(response, request)
+		server.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusOK)
 	})

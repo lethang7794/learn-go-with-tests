@@ -8,7 +8,7 @@ import (
 
 func TestIntegrationPlayerHandler(t *testing.T) {
 	store := NewInMemoryPlayerStore()
-	server := &PlayerServer{store}
+	server := NewPlayerServer(store)
 	player := "Alpha"
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
