@@ -39,9 +39,7 @@ func TestGETPlayers(t *testing.T) {
 
 		handler.ServeHTTP(response, request)
 
-		got := response.Code
-		want := http.StatusNotFound
-		assertResponseCode(t, got, want)
+		assertResponseCode(t, response.Code, http.StatusNotFound)
 	})
 }
 
