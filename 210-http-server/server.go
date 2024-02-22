@@ -11,12 +11,12 @@ type PlayerServer struct {
 }
 
 func (p *PlayerServer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	mux := http.NewServeMux()
+	router := http.NewServeMux()
 
-	mux.HandleFunc("/players/", p.PlayersHandler)
-	mux.HandleFunc("/league", p.LeagueHandler)
+	router.HandleFunc("/players/", p.PlayersHandler)
+	router.HandleFunc("/league", p.LeagueHandler)
 
-	mux.ServeHTTP(writer, request)
+	router.ServeHTTP(writer, request)
 }
 
 func (p *PlayerServer) LeagueHandler(writer http.ResponseWriter, request *http.Request) {
