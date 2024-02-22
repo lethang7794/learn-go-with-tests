@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	store := &InMemoryPlayerStore{}
+	store := NewInMemoryPlayerStore()
 	handler := &PlayerHandler{store}
 	err := http.ListenAndServe(":5000", handler)
 	if err != nil {
@@ -15,13 +15,23 @@ func main() {
 }
 
 type InMemoryPlayerStore struct {
+	scores map[string]int
 }
 
-func (f *InMemoryPlayerStore) GetPlayerScore(player string) (score int, ok bool) {
-	return 12345, true
+func NewInMemoryPlayerStore() *InMemoryPlayerStore {
+	return &InMemoryPlayerStore{
+		scores: map[string]int{},
+	}
 }
 
-func (f *InMemoryPlayerStore) RecordWin(name string) {
-	//TODO implement me
-	panic("implement me")
+func (s *InMemoryPlayerStore) GetPlayerScore(player string) (score int, ok bool) {
+	score, ok = s.scores[player]
+	if ok {
+		return score, true
+	}
+	return score, false
+}
+
+func (s *InMemoryPlayerStore) RecordWin(player string) {
+	s.scores[player]++
 }
