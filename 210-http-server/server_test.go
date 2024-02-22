@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -81,16 +82,27 @@ func TestStoreWins(t *testing.T) {
 	})
 }
 
+type Player struct {
+	Name  string
+	Score int
+}
+
 func TestLeague(t *testing.T) {
-	t.Run("", func(t *testing.T) {
+	t.Run("return 200 on /league", func(t *testing.T) {
 		store := &StubPlayerStore{}
 		server := NewPlayerServer(store)
-
 		response := httptest.NewRecorder()
 		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+
 		server.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusOK)
+
+		var got []Player
+		err := json.NewDecoder(response.Body).Decode(&got)
+		if err != nil {
+			t.Errorf("failed parsing JSON from %q: error %v", response.Body, err)
+		}
 	})
 }
 
