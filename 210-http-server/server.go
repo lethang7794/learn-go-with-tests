@@ -12,8 +12,11 @@ type PlayerHandler struct {
 
 func (p *PlayerHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	player := strings.TrimPrefix(request.URL.Path, "players/")
-	writer.WriteHeader(http.StatusNotFound)
-	fmt.Fprint(writer, p.store.GetPlayerScore(player))
+	score := p.store.GetPlayerScore(player)
+	if score == 0 {
+		writer.WriteHeader(http.StatusNotFound)
+	}
+	fmt.Fprint(writer, score)
 }
 
 type PlayerStore interface {

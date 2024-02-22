@@ -58,6 +58,7 @@ func assertResponseBody(t *testing.T, got string, want string) {
 }
 
 func assertResponseCode(t *testing.T, got int, want int) {
+	t.Helper()
 	if got != want {
 		t.Errorf("invalid code: got %#v, want %#v", got, want)
 	}
