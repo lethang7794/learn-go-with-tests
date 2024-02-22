@@ -21,6 +21,7 @@ func TestGETPlayers(t *testing.T) {
 
 		handler.ServeHTTP(response, request)
 
+		assertResponseCode(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "20")
 	})
 
@@ -30,6 +31,7 @@ func TestGETPlayers(t *testing.T) {
 
 		handler.ServeHTTP(response, request)
 
+		assertResponseCode(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "10")
 	})
 
