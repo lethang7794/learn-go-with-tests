@@ -29,6 +29,10 @@ func (p *PlayerHandler) ShowScore(writer http.ResponseWriter, player string) {
 	fmt.Fprint(writer, score)
 }
 
+func (p *PlayerHandler) ProcessWin(writer http.ResponseWriter, player string) {
+	writer.WriteHeader(http.StatusAccepted)
+}
+
 type PlayerStore interface {
 	GetPlayerScore(player string) (int, bool)
 }
