@@ -31,10 +31,12 @@ func (p *PlayerHandler) ShowScore(writer http.ResponseWriter, player string) {
 
 func (p *PlayerHandler) ProcessWin(writer http.ResponseWriter, player string) {
 	writer.WriteHeader(http.StatusAccepted)
+	p.store.RecordWin("Beta")
 }
 
 type PlayerStore interface {
 	GetPlayerScore(player string) (int, bool)
+	RecordWin(name string)
 }
 
 type StubPlayerStore struct {

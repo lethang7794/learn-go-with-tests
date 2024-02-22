@@ -20,3 +20,8 @@ type InMemoryPlayerStore struct {
 func (f *InMemoryPlayerStore) GetPlayerScore(player string) (score int, ok bool) {
 	return 12345, true
 }
+
+func (f *InMemoryPlayerStore) RecordWin(name string) {
+	//TODO implement me
+	panic("implement me")
+}
