@@ -17,6 +17,6 @@ func main() {
 type InMemoryPlayerStore struct {
 }
 
-func (f *InMemoryPlayerStore) GetPlayerScore(player string) int {
-	return 12345
+func (f *InMemoryPlayerStore) GetPlayerScore(player string) (score int, ok bool) {
+	return 12345, true
 }
