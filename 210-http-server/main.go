@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	handler := http.HandlerFunc(GetPlayerHandler)
+	handler := &PlayerHandler{}
 	err := http.ListenAndServe(":5000", handler)
 	if err != nil {
 		log.Fatal(err)

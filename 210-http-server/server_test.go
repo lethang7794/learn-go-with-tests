@@ -7,11 +7,13 @@ import (
 )
 
 func TestGETPlayers(t *testing.T) {
+	handler := PlayerHandler{}
+
 	t.Run("return Pepper score", func(t *testing.T) {
 		response := httptest.NewRecorder()
 		request := newGetScoreRequest("Pepper")
 
-		GetPlayerHandler(response, request)
+		handler.ServeHTTP(response, request)
 
 		assertResponseBody(t, response.Body.String(), "20")
 	})
@@ -20,7 +22,7 @@ func TestGETPlayers(t *testing.T) {
 		response := httptest.NewRecorder()
 		request := newGetScoreRequest("Floyd")
 
-		GetPlayerHandler(response, request)
+		handler.ServeHTTP(response, request)
 
 		assertResponseBody(t, response.Body.String(), "10")
 	})
