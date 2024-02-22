@@ -64,17 +64,19 @@ func TestStoreWins(t *testing.T) {
 	handler := &PlayerHandler{store}
 
 	t.Run("record win when POST a player", func(t *testing.T) {
+		player := "Alpha"
 		response := httptest.NewRecorder()
-		request := newPostWinRequest("Alpha")
+		request := newPostWinRequest(player)
 
 		handler.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusAccepted)
 
-		got := len(store.winCalls)
-		want := 1
-		if got != want {
+		if got, want := len(store.winCalls), 1; got != want {
 			t.Errorf("wrong number of call to RecordWin: got %#v, want %#v", got, want)
+		}
+		if got, want := store.winCalls[0], player; got != want {
+			t.Errorf("got %#v, want %#v", got, want)
 		}
 	})
 }
