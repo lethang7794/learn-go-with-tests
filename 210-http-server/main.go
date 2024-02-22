@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"sync"
 )
 
 func main() {
@@ -16,6 +17,7 @@ func main() {
 
 type InMemoryPlayerStore struct {
 	scores map[string]int
+	mu     sync.Mutex
 }
 
 func NewInMemoryPlayerStore() *InMemoryPlayerStore {
@@ -30,5 +32,7 @@ func (s *InMemoryPlayerStore) GetPlayerScore(player string) (score int, ok bool)
 }
 
 func (s *InMemoryPlayerStore) RecordWin(player string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.scores[player]++
 }
