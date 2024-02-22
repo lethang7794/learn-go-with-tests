@@ -14,7 +14,7 @@ func TestGETPlayers(t *testing.T) {
 			"Beta":   0,
 		},
 	}
-	handler := &PlayerHandler{store}
+	handler := &PlayerServer{store}
 
 	t.Run("return Pepper score", func(t *testing.T) {
 		response := httptest.NewRecorder()
@@ -61,7 +61,7 @@ func TestStoreWins(t *testing.T) {
 	store := &StubPlayerStore{
 		scores: map[string]int{},
 	}
-	handler := &PlayerHandler{store}
+	handler := &PlayerServer{store}
 
 	t.Run("record win when POST a player", func(t *testing.T) {
 		player := "Alpha"
@@ -84,7 +84,7 @@ func TestStoreWins(t *testing.T) {
 func TestLeague(t *testing.T) {
 	t.Run("", func(t *testing.T) {
 		store := &StubPlayerStore{}
-		handler := &PlayerHandler{store}
+		handler := &PlayerServer{store}
 
 		response := httptest.NewRecorder()
 		request, _ := http.NewRequest(http.MethodGet, "league", nil)
