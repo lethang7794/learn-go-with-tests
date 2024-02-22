@@ -28,3 +28,11 @@ func GetPlayerScore(player string) string {
 	}
 	return ""
 }
+
+type StubPlayerStore struct {
+}
+
+func (s *StubPlayerStore) GetPlayerScore(player string) int {
+	//TODO implement me
+	panic("implement me")
+}

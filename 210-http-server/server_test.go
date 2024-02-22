@@ -7,7 +7,8 @@ import (
 )
 
 func TestGETPlayers(t *testing.T) {
-	handler := PlayerHandler{}
+	store := &StubPlayerStore{}
+	handler := &PlayerHandler{store}
 
 	t.Run("return Pepper score", func(t *testing.T) {
 		response := httptest.NewRecorder()
