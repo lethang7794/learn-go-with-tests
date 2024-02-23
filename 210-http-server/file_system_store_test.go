@@ -27,13 +27,17 @@ func (f FileSystemPlayerStore) GetLeague() []Player {
 }
 
 func TestFileSystemStore(t *testing.T) {
-	t.Run("league from a reader", func(t *testing.T) {
-		database := strings.NewReader(`[
+	database := strings.NewReader(`[
 	{ "Name": "Alpha", "Score": 10 },
 	{ "Name": "Beta", "Score": 20 }
 ]`)
-		store := FileSystemPlayerStore{database}
+	store := FileSystemPlayerStore{database}
 
+	t.Run("get player score", func(t *testing.T) {
+
+	})
+
+	t.Run("league from a reader", func(t *testing.T) {
 		got := store.GetLeague()
 		want := []Player{
 			{Name: "Alpha", Score: 10},
