@@ -34,7 +34,11 @@ func TestFileSystemStore(t *testing.T) {
 	store := FileSystemPlayerStore{database}
 
 	t.Run("get player score", func(t *testing.T) {
-
+		got, _ := store.GetPlayerScore("Beta")
+		want := 20
+		if got != want {
+			t.Errorf("got %#v, want %#v", got, want)
+		}
 	})
 
 	t.Run("league from a reader", func(t *testing.T) {
