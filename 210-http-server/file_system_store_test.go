@@ -2,7 +2,6 @@ package main
 
 import (
 	"io"
-	"slices"
 	"strings"
 	"testing"
 )
@@ -40,8 +39,6 @@ func TestFileSystemStore(t *testing.T) {
 			{Name: "Beta", Score: 20},
 		}
 
-		if !slices.Equal(got, want) {
-			t.Errorf("got %#v, want %#v", got, want)
-		}
+		assertLeague(t, got, want)
 	})
 }
