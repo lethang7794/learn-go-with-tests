@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
+	"log"
 	"os"
 	"testing"
 )
@@ -17,7 +19,14 @@ func NewFileSystemPlayerStore(database io.ReadWriteSeeker) *FileSystemPlayerStor
 
 func (f FileSystemPlayerStore) GetLeague() League {
 	f.database.Seek(0, 0)
-	league, _ := NewLeague(f.database)
+	league, err := NewLeague(f.database)
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			return League{}
+		} else {
+			log.Fatal(err)
+		}
+	}
 	return league
 }
 
