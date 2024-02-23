@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"testing"
 )
 
@@ -84,7 +85,12 @@ func TestStoreWins(t *testing.T) {
 
 func TestLeague(t *testing.T) {
 	t.Run("return 200 on /league", func(t *testing.T) {
-		store := &StubPlayerStore{}
+		wantPlayers := []Player{
+			{Name: "First", Score: 1},
+			{Name: "Second", Score: 1},
+			{Name: "Third", Score: 1},
+		}
+		store := &StubPlayerStore{league: wantPlayers}
 		server := NewPlayerServer(store)
 		response := httptest.NewRecorder()
 		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
@@ -97,6 +103,9 @@ func TestLeague(t *testing.T) {
 		err := json.NewDecoder(response.Body).Decode(&got)
 		if err != nil {
 			t.Errorf("failed parsing JSON from %q: error %v", response.Body, err)
+		}
+		if !slices.Equal(got, wantPlayers) {
+			t.Errorf("got %#v, want %#v", got, wantPlayers)
 		}
 	})
 }
