@@ -85,13 +85,13 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestLeague(t *testing.T) {
-	t.Run("return 200 on /league", func(t *testing.T) {
-		wantPlayers := []Player{
+	t.Run("return league on /league", func(t *testing.T) {
+		wantLeague := []Player{
 			{Name: "First", Score: 1},
 			{Name: "Second", Score: 1},
 			{Name: "Third", Score: 1},
 		}
-		store := &StubPlayerStore{league: wantPlayers}
+		store := &StubPlayerStore{league: wantLeague}
 		server := NewPlayerServer(store)
 		response := httptest.NewRecorder()
 		request, _ := newGetLeagueRequest("/league")
@@ -99,8 +99,14 @@ func TestLeague(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusOK)
-		got := getLeagueFromResponse(t, response.Body)
-		assertLeague(t, got, wantPlayers)
+		gotLeague := getLeagueFromResponse(t, response.Body)
+		assertLeague(t, gotLeague, wantLeague)
+
+		got := response.Header().Get("Content-Type")
+		want := "application/json"
+		if got != want {
+			t.Errorf("got %#v, want %#v", got, want)
+		}
 	})
 }
 
