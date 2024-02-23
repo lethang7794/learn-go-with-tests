@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"io"
 	"slices"
 	"strings"
@@ -25,15 +24,6 @@ func (f FileSystemPlayerStore) RecordWin(name string) {
 func (f FileSystemPlayerStore) GetLeague() []Player {
 	league, _ := NewLeague(f.database)
 	return league
-}
-
-func NewLeague(reader io.Reader) ([]Player, error) {
-	var league []Player
-	err := json.NewDecoder(reader).Decode(&league)
-	if err != nil {
-		return nil, err
-	}
-	return league, nil
 }
 
 func TestFileSystemStore(t *testing.T) {
