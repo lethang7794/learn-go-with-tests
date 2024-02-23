@@ -32,7 +32,7 @@ func TestIntegrationPlayerHandler(t *testing.T) {
 		assertResponseCode(t, response.Code, http.StatusOK)
 
 		gotLeague := getLeagueFromResponse(t, response.Body)
-		assertLeague(t, gotLeague, []Player{{
+		assertLeague(t, gotLeague, League{{
 			Name:  player,
 			Score: 3,
 		}})

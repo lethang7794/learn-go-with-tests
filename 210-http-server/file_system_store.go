@@ -11,46 +11,48 @@ import (
 
 type FileSystemPlayerStore struct {
 	database io.ReadWriteSeeker
+	league   League
 }
 
 func NewFileSystemPlayerStore(database io.ReadWriteSeeker) *FileSystemPlayerStore {
-	return &FileSystemPlayerStore{database: database}
-}
-
-func (f FileSystemPlayerStore) GetLeague() League {
-	f.database.Seek(0, 0)
-	league, err := NewLeague(f.database)
+	database.Seek(0, 0)
+	league, err := NewLeague(database)
 	if err != nil {
 		if errors.Is(err, io.EOF) {
-			return League{}
+			league = League{}
 		} else {
 			log.Fatal(err)
 		}
 	}
-	return league
+	return &FileSystemPlayerStore{
+		database: database,
+		league:   league,
+	}
 }
 
-func (f FileSystemPlayerStore) GetPlayerScore(name string) (int, bool) {
-	league := f.GetLeague()
-	player := league.Find(name)
+func (f *FileSystemPlayerStore) GetLeague() League {
+	return f.league
+}
+
+func (f *FileSystemPlayerStore) GetPlayerScore(name string) (int, bool) {
+	player := f.league.Find(name)
 	if player != nil {
 		return player.Score, true
 	}
 	return 0, false
 }
 
-func (f FileSystemPlayerStore) RecordWin(name string) {
-	league := f.GetLeague()
-	player := league.Find(name)
+func (f *FileSystemPlayerStore) RecordWin(name string) {
+	player := f.league.Find(name)
 	if player != nil {
 		player.Score++
 	} else {
-		league = append(league,
+		f.league = append(f.league,
 			Player{Name: name, Score: 1},
 		)
 	}
 	f.database.Seek(0, 0)
-	json.NewEncoder(f.database).Encode(league)
+	json.NewEncoder(f.database).Encode(f.league)
 }
 
 func createTempFile(t *testing.T, initialData string) (_ io.ReadWriteSeeker, cleanup func()) {

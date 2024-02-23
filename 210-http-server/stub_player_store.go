@@ -3,7 +3,7 @@ package main
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league   []Player
+	league   League
 }
 
 func (s *StubPlayerStore) GetPlayerScore(player string) (score int, ok bool) {
