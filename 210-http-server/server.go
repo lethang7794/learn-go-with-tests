@@ -7,11 +7,25 @@ import (
 	"strings"
 )
 
+// PlayerStore stores score information about players
+type PlayerStore interface {
+	GetPlayerScore(player string) (int, bool)
+	RecordWin(name string)
+	GetLeague() []Player
+}
+
+// Player stores a player with score
+type Player struct {
+	Name  string
+	Score int
+}
+
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
 }
 
+// NewPlayerServer creates a PlayerServer with routing configured
 func NewPlayerServer(store PlayerStore) *PlayerServer {
 	server := new(PlayerServer)
 	server.store = store
@@ -56,15 +70,4 @@ func (p *PlayerServer) ShowScore(writer http.ResponseWriter, player string) {
 func (p *PlayerServer) ProcessWin(writer http.ResponseWriter, player string) {
 	writer.WriteHeader(http.StatusAccepted)
 	p.store.RecordWin(player)
-}
-
-type PlayerStore interface {
-	GetPlayerScore(player string) (int, bool)
-	RecordWin(name string)
-	GetLeague() []Player
-}
-
-type Player struct {
-	Name  string
-	Score int
 }
