@@ -17,20 +17,20 @@ func (f FileSystemPlayerStore) GetLeague() League {
 	return league
 }
 
-func (f FileSystemPlayerStore) GetPlayerScore(player string) (int, bool) {
+func (f FileSystemPlayerStore) GetPlayerScore(name string) (int, bool) {
 	league := f.GetLeague()
-	found := league.Find(player)
-	if found != nil {
-		return found.Score, true
+	player := league.Find(name)
+	if player != nil {
+		return player.Score, true
 	}
 	return 0, false
 }
 
 func (f FileSystemPlayerStore) RecordWin(name string) {
 	league := f.GetLeague()
-	found := league.Find(name)
-	if found != nil {
-		found.Score++
+	player := league.Find(name)
+	if player != nil {
+		player.Score++
 	}
 	f.database.Seek(0, 0)
 	json.NewEncoder(f.database).Encode(league)
