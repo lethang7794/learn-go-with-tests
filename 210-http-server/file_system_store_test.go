@@ -75,6 +75,16 @@ func TestFileSystemStore(t *testing.T) {
 			t.Errorf("got %#v, want %#v", got, want)
 		}
 	})
+
+	t.Run("store wins for new player", func(t *testing.T) {
+		store.RecordWin("Gamma")
+
+		got, _ := store.GetPlayerScore("Gamma")
+		want := 1
+		if got != want {
+			t.Errorf("got %#v, want %#v", got, want)
+		}
+	})
 }
 
 func createTempFile(t *testing.T, initialData string) (_ io.ReadWriteSeeker, cleanup func()) {
