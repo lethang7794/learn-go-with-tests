@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 	"os"
 	"testing"
@@ -8,6 +9,12 @@ import (
 
 type FileSystemPlayerStore struct {
 	database io.ReadWriteSeeker
+}
+
+func (f FileSystemPlayerStore) GetLeague() []Player {
+	f.database.Seek(0, 0)
+	league, _ := NewLeague(f.database)
+	return league
 }
 
 func (f FileSystemPlayerStore) GetPlayerScore(player string) (int, bool) {
@@ -20,14 +27,15 @@ func (f FileSystemPlayerStore) GetPlayerScore(player string) (int, bool) {
 }
 
 func (f FileSystemPlayerStore) RecordWin(name string) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (f FileSystemPlayerStore) GetLeague() []Player {
+	league := f.GetLeague()
+	for i, player := range league {
+		if player.Name == name {
+			league[i].Score++
+			break
+		}
+	}
 	f.database.Seek(0, 0)
-	league, _ := NewLeague(f.database)
-	return league
+	json.NewEncoder(f.database).Encode(league)
 }
 
 func TestFileSystemStore(t *testing.T) {
