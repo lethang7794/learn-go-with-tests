@@ -51,10 +51,20 @@ func TestFileSystemStore(t *testing.T) {
 		got = store.GetLeague()
 		assertLeague(t, got, want)
 	})
-	
+
 	t.Run("get player score", func(t *testing.T) {
 		got, _ := store.GetPlayerScore("Beta")
 		want := 20
+		if got != want {
+			t.Errorf("got %#v, want %#v", got, want)
+		}
+	})
+
+	t.Run("store wins for existing player", func(t *testing.T) {
+		store.RecordWin("Beta")
+
+		got, _ := store.GetPlayerScore("Beta")
+		want := 21
 		if got != want {
 			t.Errorf("got %#v, want %#v", got, want)
 		}
