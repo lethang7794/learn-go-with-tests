@@ -2,7 +2,7 @@ package main
 
 import (
 	"io"
-	"strings"
+	"os"
 	"testing"
 )
 
@@ -31,19 +31,12 @@ func (f FileSystemPlayerStore) GetLeague() []Player {
 }
 
 func TestFileSystemStore(t *testing.T) {
-	database := strings.NewReader(`[
+	database, cleanup := createTempFile(t, `[
 	{ "Name": "Alpha", "Score": 10 },
 	{ "Name": "Beta", "Score": 20 }
 ]`)
+	defer cleanup()
 	store := FileSystemPlayerStore{database}
-
-	t.Run("get player score", func(t *testing.T) {
-		got, _ := store.GetPlayerScore("Beta")
-		want := 20
-		if got != want {
-			t.Errorf("got %#v, want %#v", got, want)
-		}
-	})
 
 	t.Run("league from a reader", func(t *testing.T) {
 		got := store.GetLeague()
@@ -58,4 +51,27 @@ func TestFileSystemStore(t *testing.T) {
 		got = store.GetLeague()
 		assertLeague(t, got, want)
 	})
+	
+	t.Run("get player score", func(t *testing.T) {
+		got, _ := store.GetPlayerScore("Beta")
+		want := 20
+		if got != want {
+			t.Errorf("got %#v, want %#v", got, want)
+		}
+	})
+}
+
+func createTempFile(t *testing.T, initialData string) (_ io.ReadWriteSeeker, cleanup func()) {
+	temp, err := os.CreateTemp("", "db")
+	if err != nil {
+		t.Fatalf("failed creating temp file: %v", err)
+	}
+	_, err = temp.Write([]byte(initialData))
+	if err != nil {
+		t.Fatalf("failed writing initial data: %v", err)
+	}
+	return temp, func() {
+		temp.Close()
+		os.Remove(temp.Name())
+	}
 }
