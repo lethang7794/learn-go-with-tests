@@ -11,7 +11,7 @@ import (
 type PlayerStore interface {
 	GetPlayerScore(player string) (int, bool)
 	RecordWin(name string)
-	GetLeague() []Player
+	GetLeague() League
 }
 
 // Player stores a player with score

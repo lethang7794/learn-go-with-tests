@@ -7,7 +7,9 @@ import (
 )
 
 func TestIntegrationPlayerHandler(t *testing.T) {
-	store := NewInMemoryPlayerStore()
+	database, cleanup := createTempFile(t, `[]`)
+	defer cleanup()
+	store := NewFileSystemPlayerStore(database)
 	server := NewPlayerServer(store)
 
 	player := "Alpha"

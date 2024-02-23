@@ -11,6 +11,10 @@ type FileSystemPlayerStore struct {
 	database io.ReadWriteSeeker
 }
 
+func NewFileSystemPlayerStore(database io.ReadWriteSeeker) *FileSystemPlayerStore {
+	return &FileSystemPlayerStore{database: database}
+}
+
 func (f FileSystemPlayerStore) GetLeague() League {
 	f.database.Seek(0, 0)
 	league, _ := NewLeague(f.database)
@@ -46,7 +50,7 @@ func TestFileSystemStore(t *testing.T) {
 	{ "Name": "Beta", "Score": 20 }
 ]`)
 	defer cleanup()
-	store := FileSystemPlayerStore{database}
+	store := NewFileSystemPlayerStore(database)
 
 	t.Run("league from a reader", func(t *testing.T) {
 		got := store.GetLeague()
