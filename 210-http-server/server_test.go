@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"slices"
@@ -93,21 +94,28 @@ func TestLeague(t *testing.T) {
 		store := &StubPlayerStore{league: wantPlayers}
 		server := NewPlayerServer(store)
 		response := httptest.NewRecorder()
-		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+		request, _ := newGetLeagueRequest("/league")
 
 		server.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusOK)
-
-		var got []Player
-		err := json.NewDecoder(response.Body).Decode(&got)
-		if err != nil {
-			t.Errorf("failed parsing JSON from %q: error %v", response.Body, err)
-		}
-		if !slices.Equal(got, wantPlayers) {
-			t.Errorf("got %#v, want %#v", got, wantPlayers)
-		}
+		got := getLeagueFromResponse(t, response.Body)
+		assertLeague(t, got, wantPlayers)
 	})
+}
+
+func getLeagueFromResponse(t *testing.T, body io.Reader) []Player {
+	t.Helper()
+	var got []Player
+	err := json.NewDecoder(body).Decode(&got)
+	if err != nil {
+		t.Errorf("failed parsing JSON from %q: error %v", body, err)
+	}
+	return got
+}
+
+func newGetLeagueRequest(path string) (*http.Request, error) {
+	return http.NewRequest(http.MethodGet, path, nil)
 }
 
 func newGetScoreRequest(name string) *http.Request {
@@ -131,5 +139,12 @@ func assertResponseCode(t *testing.T, got int, want int) {
 	t.Helper()
 	if got != want {
 		t.Errorf("invalid code: got %#v, want %#v", got, want)
+	}
+}
+
+func assertLeague(t *testing.T, got []Player, want []Player) {
+	t.Helper()
+	if !slices.Equal(got, want) {
+		t.Errorf("got %#v, want %#v", got, want)
 	}
 }
