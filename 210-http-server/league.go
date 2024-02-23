@@ -6,8 +6,10 @@ import (
 	"io"
 )
 
-func NewLeague(reader io.Reader) ([]Player, error) {
-	var league []Player
+type League []Player
+
+func NewLeague(reader io.Reader) (League, error) {
+	var league League
 	err := json.NewDecoder(reader).Decode(&league)
 	if err != nil {
 		return nil, fmt.Errorf("failed parsing league from JSON: %v", err)

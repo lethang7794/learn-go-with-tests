@@ -85,7 +85,7 @@ func TestStoreWins(t *testing.T) {
 
 func TestLeague(t *testing.T) {
 	t.Run("return league on /league", func(t *testing.T) {
-		wantLeague := []Player{
+		wantLeague := League{
 			{Name: "First", Score: 1},
 			{Name: "Second", Score: 1},
 			{Name: "Third", Score: 1},
@@ -104,7 +104,7 @@ func TestLeague(t *testing.T) {
 	})
 }
 
-func getLeagueFromResponse(t *testing.T, body io.Reader) []Player {
+func getLeagueFromResponse(t *testing.T, body io.Reader) League {
 	t.Helper()
 	got, _ := NewLeague(body)
 	return got
@@ -139,7 +139,7 @@ func assertResponseCode(t *testing.T, got int, want int) {
 	}
 }
 
-func assertLeague(t *testing.T, got []Player, want []Player) {
+func assertLeague(t *testing.T, got League, want League) {
 	t.Helper()
 	if !slices.Equal(got, want) {
 		t.Errorf("got %#v, want %#v", got, want)
