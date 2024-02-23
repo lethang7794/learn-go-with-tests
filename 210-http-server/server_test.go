@@ -98,15 +98,10 @@ func TestLeague(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		assertResponseCode(t, response.Code, http.StatusOK)
 		gotLeague := getLeagueFromResponse(t, response.Body)
 		assertLeague(t, gotLeague, wantLeague)
-
-		got := response.Header().Get("Content-Type")
-		want := "application/json"
-		if got != want {
-			t.Errorf("got %#v, want %#v", got, want)
-		}
+		assertResponseCode(t, response.Code, http.StatusOK)
+		assertResponseHeaderContentType(t, response)
 	})
 }
 
@@ -144,7 +139,7 @@ func assertResponseBody(t *testing.T, got string, want string) {
 func assertResponseCode(t *testing.T, got int, want int) {
 	t.Helper()
 	if got != want {
-		t.Errorf("invalid code: got %#v, want %#v", got, want)
+		t.Errorf("wrong code: got %#v, want %#v", got, want)
 	}
 }
 
@@ -152,5 +147,14 @@ func assertLeague(t *testing.T, got []Player, want []Player) {
 	t.Helper()
 	if !slices.Equal(got, want) {
 		t.Errorf("got %#v, want %#v", got, want)
+	}
+}
+
+func assertResponseHeaderContentType(t *testing.T, response http.ResponseWriter) {
+	t.Helper()
+	got := response.Header().Get("Content-Type")
+	want := jsonContentType
+	if got != want {
+		t.Errorf("wrong Content-Type: got %#v, want %#v", got, want)
 	}
 }
