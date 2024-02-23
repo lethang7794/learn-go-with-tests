@@ -9,15 +9,30 @@ import (
 func TestIntegrationPlayerHandler(t *testing.T) {
 	store := NewInMemoryPlayerStore()
 	server := NewPlayerServer(store)
+
 	player := "Alpha"
-
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
 
-	response := httptest.NewRecorder()
-	server.ServeHTTP(response, newGetScoreRequest(player))
+	t.Run("get score", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, newGetScoreRequest(player))
 
-	assertResponseCode(t, response.Code, http.StatusOK)
-	assertResponseBody(t, response.Body.String(), "3")
+		assertResponseCode(t, response.Code, http.StatusOK)
+		assertResponseBody(t, response.Body.String(), "3")
+	})
+
+	t.Run("get league", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, newGetLeagueRequest())
+
+		assertResponseCode(t, response.Code, http.StatusOK)
+
+		gotLeague := getLeagueFromResponse(t, response.Body)
+		assertLeague(t, gotLeague, []Player{{
+			Name:  player,
+			Score: 3,
+		}})
+	})
 }

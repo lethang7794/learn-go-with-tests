@@ -94,7 +94,7 @@ func TestLeague(t *testing.T) {
 		store := &StubPlayerStore{league: wantLeague}
 		server := NewPlayerServer(store)
 		response := httptest.NewRecorder()
-		request, _ := newGetLeagueRequest("/league")
+		request := newGetLeagueRequest()
 
 		server.ServeHTTP(response, request)
 
@@ -115,8 +115,9 @@ func getLeagueFromResponse(t *testing.T, body io.Reader) []Player {
 	return got
 }
 
-func newGetLeagueRequest(path string) (*http.Request, error) {
-	return http.NewRequest(http.MethodGet, path, nil)
+func newGetLeagueRequest() *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, "/league", nil)
+	return req
 }
 
 func newGetScoreRequest(name string) *http.Request {
