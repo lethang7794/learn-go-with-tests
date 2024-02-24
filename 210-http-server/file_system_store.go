@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
 	"os"
 	"testing"
 )
@@ -15,7 +17,11 @@ func NewFileSystemPlayerStore(database *os.File) (*FileSystemPlayerStore, error)
 	database.Seek(0, 0)
 	league, err := NewLeague(database)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, io.EOF) {
+			league = League{}
+		} else {
+			return nil, err
+		}
 	}
 	return &FileSystemPlayerStore{
 		database: json.NewEncoder(&tape{database}),
