@@ -10,7 +10,7 @@ import (
 )
 
 type FileSystemPlayerStore struct {
-	database io.Writer
+	database *json.Encoder
 	league   League
 }
 
@@ -25,7 +25,7 @@ func NewFileSystemPlayerStore(database *os.File) *FileSystemPlayerStore {
 		}
 	}
 	return &FileSystemPlayerStore{
-		database: &Tape{database},
+		database: json.NewEncoder(&Tape{database}),
 		league:   league,
 	}
 }
@@ -51,7 +51,7 @@ func (f *FileSystemPlayerStore) RecordWin(name string) {
 			Player{Name: name, Score: 1},
 		)
 	}
-	json.NewEncoder(f.database).Encode(f.league)
+	f.database.Encode(f.league)
 }
 
 func createTempFile(t *testing.T, initialData string) (_ *os.File, cleanup func()) {
