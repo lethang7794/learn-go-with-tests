@@ -10,7 +10,8 @@ func TestFileSystemStore(t *testing.T) {
 	{ "Name": "Beta", "Score": 20 }
 ]`)
 	defer cleanup()
-	store := NewFileSystemPlayerStore(database)
+	store, err := NewFileSystemPlayerStore(database)
+	assertNoError(t, err)
 
 	t.Run("league from a reader", func(t *testing.T) {
 		got := store.GetLeague()
@@ -53,4 +54,16 @@ func TestFileSystemStore(t *testing.T) {
 			t.Errorf("got %#v, want %#v", got, want)
 		}
 	})
+}
+
+func TestFileSystemStore_EmptyFile(t *testing.T) {
+	database, _ := createTempFile(t, ``)
+	_, err := NewFileSystemPlayerStore(database)
+	assertNoError(t, err)
+}
+
+func assertNoError(t *testing.T, err error) {
+	if err != nil {
+		t.Fatalf("didn't expect an error, but got one: %v", err)
+	}
 }

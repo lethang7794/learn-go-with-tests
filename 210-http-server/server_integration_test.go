@@ -9,7 +9,8 @@ import (
 func TestIntegrationPlayerHandler(t *testing.T) {
 	database, cleanup := createTempFile(t, `[]`)
 	defer cleanup()
-	store := NewFileSystemPlayerStore(database)
+	store, err := NewFileSystemPlayerStore(database)
+	assertNoError(t, err)
 	server := NewPlayerServer(store)
 
 	player := "Alpha"

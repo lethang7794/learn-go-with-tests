@@ -13,7 +13,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	store := NewFileSystemPlayerStore(database)
+	store, err := NewFileSystemPlayerStore(database)
+	if err != nil {
+		log.Fatal(err)
+	}
 	server := NewPlayerServer(store)
 	err = http.ListenAndServe(":5000", server)
 	if err != nil {
