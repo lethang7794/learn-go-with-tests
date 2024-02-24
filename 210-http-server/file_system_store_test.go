@@ -57,7 +57,8 @@ func TestFileSystemStore(t *testing.T) {
 }
 
 func TestFileSystemStore_EmptyFile(t *testing.T) {
-	database, _ := createTempFile(t, ``)
+	database, cleanup := createTempFile(t, ``)
+	defer cleanup()
 	_, err := NewFileSystemPlayerStore(database)
 	assertNoError(t, err)
 }
