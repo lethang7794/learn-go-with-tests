@@ -12,7 +12,7 @@ func TestTape_Write(t *testing.T) {
 
 		file, cleanup := createTempFile(t, initial)
 		defer cleanup()
-		tape := Tape{file}
+		tape := tape{file}
 		tape.Write([]byte(override))
 
 		tape.file.Seek(0, 0)
