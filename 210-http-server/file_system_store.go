@@ -10,7 +10,7 @@ import (
 )
 
 type FileSystemPlayerStore struct {
-	database io.ReadWriteSeeker
+	database io.Writer
 	league   League
 }
 
@@ -25,7 +25,7 @@ func NewFileSystemPlayerStore(database io.ReadWriteSeeker) *FileSystemPlayerStor
 		}
 	}
 	return &FileSystemPlayerStore{
-		database: database,
+		database: &Tape{database},
 		league:   league,
 	}
 }
@@ -51,7 +51,6 @@ func (f *FileSystemPlayerStore) RecordWin(name string) {
 			Player{Name: name, Score: 1},
 		)
 	}
-	f.database.Seek(0, 0)
 	json.NewEncoder(f.database).Encode(f.league)
 }
 
