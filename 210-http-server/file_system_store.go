@@ -14,7 +14,7 @@ type FileSystemPlayerStore struct {
 	league   League
 }
 
-func NewFileSystemPlayerStore(database io.ReadWriteSeeker) *FileSystemPlayerStore {
+func NewFileSystemPlayerStore(database *os.File) *FileSystemPlayerStore {
 	database.Seek(0, 0)
 	league, err := NewLeague(database)
 	if err != nil {
@@ -54,7 +54,7 @@ func (f *FileSystemPlayerStore) RecordWin(name string) {
 	json.NewEncoder(f.database).Encode(f.league)
 }
 
-func createTempFile(t *testing.T, initialData string) (_ io.ReadWriteSeeker, cleanup func()) {
+func createTempFile(t *testing.T, initialData string) (_ *os.File, cleanup func()) {
 	temp, err := os.CreateTemp("", "db")
 	if err != nil {
 		t.Fatalf("failed creating temp file: %v", err)
