@@ -1,6 +1,8 @@
 package poker
 
-import "io"
+import (
+	"io"
+)
 
 type CLI struct {
 	store PlayerStore
@@ -8,5 +10,5 @@ type CLI struct {
 }
 
 func (c *CLI) PlayPoker() {
-	c.store.RecordWin("Bob")
+	c.store.RecordWin("Andy")
 }
