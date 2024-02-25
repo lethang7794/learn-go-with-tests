@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	poker "github.com/lethang7794/learn-go-with-tests"
 )
@@ -11,11 +10,7 @@ import (
 const dbFileName = "game.db.json"
 
 func main() {
-	database, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-	store, err := poker.NewFileSystemPlayerStore(database)
+	store, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
