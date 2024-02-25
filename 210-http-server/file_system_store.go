@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"slices"
 	"testing"
 )
 
@@ -35,7 +36,11 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 }
 
 func (f *FileSystemPlayerStore) GetLeague() League {
-	return f.league
+	league := f.league
+	slices.SortFunc(league, func(a, b Player) int {
+		return b.Score - a.Score
+	})
+	return league
 }
 
 func (f *FileSystemPlayerStore) GetPlayerScore(name string) (int, bool) {
