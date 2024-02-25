@@ -10,10 +10,11 @@ import (
 const dbFileName = "game.db.json"
 
 func main() {
-	store, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
+	store, cleanup, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer cleanup()
 	server := poker.NewPlayerServer(store)
 	err = http.ListenAndServe(":5000", server)
 	if err != nil {
