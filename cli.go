@@ -4,6 +4,6 @@ type CLI struct {
 	store PlayerStore
 }
 
-func (c CLI) PlayPoker() {
+func (c *CLI) PlayPoker() {
 	c.store.RecordWin("Bob")
 }
