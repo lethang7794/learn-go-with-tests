@@ -11,6 +11,10 @@ type CLI struct {
 	in    io.Reader
 }
 
+func NewCLI(store PlayerStore, in io.Reader) *CLI {
+	return &CLI{store: store, in: in}
+}
+
 func (c *CLI) PlayPoker() {
 	reader := bufio.NewScanner(c.in)
 	reader.Scan()
