@@ -1,6 +1,7 @@
 package main
 
 import (
+	poker "github.com/lethang7794/learn-go-with-tests"
 	"log"
 	"net/http"
 	"os"
@@ -13,11 +14,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	store, err := NewFileSystemPlayerStore(database)
+	store, err := poker.NewFileSystemPlayerStore(database)
 	if err != nil {
 		log.Fatal(err)
 	}
-	server := NewPlayerServer(store)
+	server := poker.NewPlayerServer(store)
 	err = http.ListenAndServe(":5000", server)
 	if err != nil {
 		log.Fatal(err)

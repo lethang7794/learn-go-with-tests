@@ -1,4 +1,4 @@
-package main
+package poker
 
 type StubPlayerStore struct {
 	scores   map[string]int
