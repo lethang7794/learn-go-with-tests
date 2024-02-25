@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmp"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -38,7 +39,7 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 func (f *FileSystemPlayerStore) GetLeague() League {
 	league := f.league
 	slices.SortFunc(league, func(a, b Player) int {
-		return b.Score - a.Score
+		return cmp.Compare(b.Score, a.Score)
 	})
 	return league
 }
