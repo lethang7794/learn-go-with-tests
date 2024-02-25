@@ -7,18 +7,20 @@ import (
 )
 
 type CLI struct {
-	store PlayerStore
-	in    io.Reader
+	store   PlayerStore
+	scanner *bufio.Scanner
 }
 
 func NewCLI(store PlayerStore, in io.Reader) *CLI {
-	return &CLI{store: store, in: in}
+	return &CLI{
+		store:   store,
+		scanner: bufio.NewScanner(in),
+	}
 }
 
 func (c *CLI) PlayPoker() {
-	reader := bufio.NewScanner(c.in)
-	reader.Scan()
-	line := reader.Text()
+	c.scanner.Scan()
+	line := c.scanner.Text()
 	winner := extractWinner(line)
 	c.store.RecordWin(winner)
 }

@@ -9,7 +9,7 @@ func TestCLI(t *testing.T) {
 	t.Run("Record Andy wins", func(t *testing.T) {
 		in := strings.NewReader("Andy wins")
 		store := &StubPlayerStore{}
-		cli := &CLI{store, in}
+		cli := NewCLI(store, in)
 
 		cli.PlayPoker()
 
@@ -19,7 +19,7 @@ func TestCLI(t *testing.T) {
 	t.Run("Record Bob wins", func(t *testing.T) {
 		in := strings.NewReader("Bob wins")
 		store := &StubPlayerStore{}
-		cli := &CLI{store, in}
+		cli := NewCLI(store, in)
 
 		cli.PlayPoker()
 
