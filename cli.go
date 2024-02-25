@@ -19,10 +19,14 @@ func NewCLI(store PlayerStore, in io.Reader) *CLI {
 }
 
 func (c *CLI) PlayPoker() {
-	c.scanner.Scan()
-	line := c.scanner.Text()
+	line := c.readLine()
 	winner := extractWinner(line)
 	c.store.RecordWin(winner)
+}
+
+func (c *CLI) readLine() string {
+	c.scanner.Scan()
+	return c.scanner.Text()
 }
 
 func extractWinner(line string) string {
