@@ -12,18 +12,24 @@ import (
 const userPrompt = "Please enter the number of users: "
 
 type CLI struct {
+	in   *bufio.Scanner
+	out  io.Writer
+	game Game
+}
+
+type Game struct {
 	store   PlayerStore
-	scanner *bufio.Scanner
-	out     io.Writer
 	alerter BlindAlerter
 }
 
 func NewCLI(store PlayerStore, in io.Reader, out io.Writer, alerter BlindAlerter) *CLI {
 	return &CLI{
-		store:   store,
-		scanner: bufio.NewScanner(in),
-		out:     out,
-		alerter: alerter,
+		in:  bufio.NewScanner(in),
+		out: out,
+		game: Game{
+			store:   store,
+			alerter: alerter,
+		},
 	}
 }
 
@@ -34,7 +40,7 @@ func (c *CLI) PlayPoker() {
 	c.scheduleBlindAlerts(numberOfPlayers)
 	line = c.readLine()
 	winner := extractWinner(line)
-	c.store.RecordWin(winner)
+	c.game.store.RecordWin(winner)
 }
 
 func (c *CLI) scheduleBlindAlerts(numberOfPlayers int) {
@@ -43,14 +49,14 @@ func (c *CLI) scheduleBlindAlerts(numberOfPlayers int) {
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
 	blindTime := 0 * time.Second
 	for _, blind := range blinds {
-		c.alerter.ScheduleAlertAt(blindTime, blind)
+		c.game.alerter.ScheduleAlertAt(blindTime, blind)
 		blindTime += blindIncrement
 	}
 }
 
 func (c *CLI) readLine() string {
-	c.scanner.Scan()
-	return c.scanner.Text()
+	c.in.Scan()
+	return c.in.Text()
 }
 
 func extractWinner(line string) string {
