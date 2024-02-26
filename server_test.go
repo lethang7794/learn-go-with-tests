@@ -8,6 +8,19 @@ import (
 	"testing"
 )
 
+func TestGame(t *testing.T) {
+	t.Run("GET /game returns 200", func(t *testing.T) {
+		store := &StubPlayerStore{}
+		server := NewPlayerServer(store)
+
+		request, _ := http.NewRequest(http.MethodGet, "/game", nil)
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, request)
+
+		assertResponseCode(t, response.Code, http.StatusOK)
+	})
+}
+
 func TestGETPlayers(t *testing.T) {
 	store := &StubPlayerStore{
 		scores: map[string]int{
