@@ -30,3 +30,16 @@ func (g TexasHoldem) Start(numberOfPlayers int) {
 func (g TexasHoldem) Finish(winner string) {
 	g.store.RecordWin(winner)
 }
+
+type GameSpy struct {
+	StartsWith   int
+	FinishesWith string
+}
+
+func (g *GameSpy) Start(numberOfPlayers int) {
+	g.StartsWith = numberOfPlayers
+}
+
+func (g *GameSpy) Finish(winner string) {
+	g.FinishesWith = winner
+}
