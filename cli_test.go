@@ -38,10 +38,7 @@ func TestCLI(t *testing.T) {
 
 		cli.PlayPoker()
 
-		cases := []struct {
-			scheduledAt time.Duration
-			amount      int
-		}{
+		cases := []scheduledAlert{
 			{0 * time.Minute, 100},
 			{10 * time.Minute, 200},
 			{20 * time.Minute, 300},
@@ -63,15 +60,20 @@ func TestCLI(t *testing.T) {
 
 				alert := spyBlindAlerter.alerts[i]
 
-				if alert.amount != c.amount {
-					t.Errorf("got %#v, want %#v", alert.amount, c.amount)
-				}
-				if alert.scheduledAt != c.scheduledAt {
-					t.Errorf("got %#v, want %#v", alert.scheduledAt, c.scheduledAt)
-				}
+				assertScheduledAlert(t, alert, c)
 			})
 		}
 	})
+}
+
+func assertScheduledAlert(t *testing.T, alert scheduledAlert, c scheduledAlert) {
+	t.Helper()
+	if alert.amount != c.amount {
+		t.Errorf("got %#v, want %#v", alert.amount, c.amount)
+	}
+	if alert.scheduledAt != c.scheduledAt {
+		t.Errorf("got %#v, want %#v", alert.scheduledAt, c.scheduledAt)
+	}
 }
 
 func assertWinner(t *testing.T, store *StubPlayerStore, winner string) {
