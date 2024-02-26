@@ -15,7 +15,7 @@ import (
 func TestGame(t *testing.T) {
 	t.Run("GET /game returns 200", func(t *testing.T) {
 		store := &StubPlayerStore{}
-		server := mustMakePlayerServer(t, store)
+		server := mustMakePlayerServer(t, store, nil)
 
 		request, _ := http.NewRequest(http.MethodGet, "/game", nil)
 		response := httptest.NewRecorder()
@@ -27,18 +27,15 @@ func TestGame(t *testing.T) {
 	t.Run("when we get a message over WebSocket, it's a winner of a game", func(t *testing.T) {
 		winner := "Ruth"
 		store := &StubPlayerStore{}
-		server := mustMakePlayerServer(t, store)
+		server := mustMakePlayerServer(t, store, nil)
 		testServer := httptest.NewServer(server.Handler)
 		defer testServer.Close()
 
 		wsURl := "ws" + strings.TrimPrefix(testServer.URL, "http") + "/ws"
-		conn, cleanup, err := mustMakeWebSocketConn(t, wsURl)
-		defer cleanup()
+		ws := mustMakeWebSocketConn(t, wsURl)
+		defer ws.Close()
 
-		err = conn.WriteMessage(websocket.TextMessage, []byte(winner))
-		if err != nil {
-			t.Fatalf("could not send message over WebSocket connection: %v", err)
-		}
+		writeWsMessage(t, ws, winner)
 
 		time.Sleep(10 * time.Millisecond) // TODO: remove
 		assertWinner(t, store, winner)
@@ -73,7 +70,7 @@ func TestGETPlayers(t *testing.T) {
 			"Beta":   0,
 		},
 	}
-	server := mustMakePlayerServer(t, store)
+	server := mustMakePlayerServer(t, store, nil)
 
 	t.Run("return Pepper score", func(t *testing.T) {
 		response := httptest.NewRecorder()
@@ -120,7 +117,7 @@ func TestStoreWins(t *testing.T) {
 	store := &StubPlayerStore{
 		scores: map[string]int{},
 	}
-	server := mustMakePlayerServer(t, store)
+	server := mustMakePlayerServer(t, store, nil)
 
 	t.Run("record win when POST a player", func(t *testing.T) {
 		player := "Alpha"
@@ -148,7 +145,7 @@ func TestLeague(t *testing.T) {
 			{Name: "Third", Score: 1},
 		}
 		store := &StubPlayerStore{league: wantLeague}
-		server := mustMakePlayerServer(t, store)
+		server := mustMakePlayerServer(t, store, nil)
 		response := httptest.NewRecorder()
 		request := newGetLeagueRequest()
 
@@ -212,7 +209,7 @@ func assertResponseHeaderContentType(t *testing.T, response http.ResponseWriter)
 	}
 }
 
-func mustMakePlayerServer(t *testing.T, store PlayerStore) *PlayerServer {
+func mustMakePlayerServer(t *testing.T, store PlayerStore, game Game) *PlayerServer {
 	t.Helper()
 	server, err := NewPlayerServer(store)
 	if err != nil {
@@ -221,12 +218,18 @@ func mustMakePlayerServer(t *testing.T, store PlayerStore) *PlayerServer {
 	return server
 }
 
-func mustMakeWebSocketConn(t *testing.T, wsURl string) (_ *websocket.Conn, cleanup func(), _ error) {
+func mustMakeWebSocketConn(t *testing.T, wsURl string) *websocket.Conn {
 	conn, _, err := websocket.DefaultDialer.Dial(wsURl, nil)
 	if err != nil {
 		t.Fatalf("could not open WebSocket connection: %v", err)
 	}
-	return conn, func() {
-		conn.Close()
-	}, err
+	return conn
+}
+
+func writeWsMessage(t *testing.T, ws *websocket.Conn, msg string) {
+	t.Helper()
+	err := ws.WriteMessage(websocket.TextMessage, []byte(msg))
+	if err != nil {
+		t.Logf("could not write websocket message: %v", err)
+	}
 }
