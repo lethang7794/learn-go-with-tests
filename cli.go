@@ -2,6 +2,7 @@ package poker
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"strings"
 	"time"
@@ -52,16 +53,21 @@ type Alerter interface {
 	ScheduleAlertAt(duration time.Duration, amount int)
 }
 
+type scheduledAlert struct {
+	scheduledAt time.Duration
+	amount      int
+}
+
+func (a scheduledAlert) String() string {
+	return fmt.Sprintf("%v chips at %v", a.amount, a.scheduledAt)
+}
+
 type SpyBlindAlerter struct {
-	alerts []struct {
-		scheduledAt time.Duration
-		amount      int
-	}
+	alerts []scheduledAlert
 }
 
 func (a *SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
-	a.alerts = append(a.alerts, struct {
-		scheduledAt time.Duration
-		amount      int
-	}{scheduledAt: duration, amount: amount})
+	a.alerts = append(a.alerts, scheduledAlert{
+		scheduledAt: duration, amount: amount,
+	})
 }
