@@ -15,7 +15,7 @@ import (
 func TestGame(t *testing.T) {
 	t.Run("GET /game returns 200", func(t *testing.T) {
 		store := &StubPlayerStore{}
-		server := NewPlayerServer(store)
+		server := mustMakePlayerServer(t, store)
 
 		request, _ := http.NewRequest(http.MethodGet, "/game", nil)
 		response := httptest.NewRecorder()
@@ -27,7 +27,7 @@ func TestGame(t *testing.T) {
 	t.Run("when we get a message over WebSocket, it's a winner of a game", func(t *testing.T) {
 		winner := "Ruth"
 		store := &StubPlayerStore{}
-		server := NewPlayerServer(store)
+		server := mustMakePlayerServer(t, store)
 		testServer := httptest.NewServer(server.Handler)
 		defer testServer.Close()
 
@@ -56,7 +56,7 @@ func TestGETPlayers(t *testing.T) {
 			"Beta":   0,
 		},
 	}
-	server := NewPlayerServer(store)
+	server := mustMakePlayerServer(t, store)
 
 	t.Run("return Pepper score", func(t *testing.T) {
 		response := httptest.NewRecorder()
@@ -103,7 +103,7 @@ func TestStoreWins(t *testing.T) {
 	store := &StubPlayerStore{
 		scores: map[string]int{},
 	}
-	server := NewPlayerServer(store)
+	server := mustMakePlayerServer(t, store)
 
 	t.Run("record win when POST a player", func(t *testing.T) {
 		player := "Alpha"
@@ -131,7 +131,7 @@ func TestLeague(t *testing.T) {
 			{Name: "Third", Score: 1},
 		}
 		store := &StubPlayerStore{league: wantLeague}
-		server := NewPlayerServer(store)
+		server := mustMakePlayerServer(t, store)
 		response := httptest.NewRecorder()
 		request := newGetLeagueRequest()
 
@@ -193,4 +193,13 @@ func assertResponseHeaderContentType(t *testing.T, response http.ResponseWriter)
 	if got != want {
 		t.Errorf("wrong Content-Type: got %#v, want %#v", got, want)
 	}
+}
+
+func mustMakePlayerServer(t *testing.T, store PlayerStore) *PlayerServer {
+	t.Helper()
+	server, err := NewPlayerServer(store)
+	if err != nil {
+		t.Fatalf("could not create player server: %v", err)
+	}
+	return server
 }

@@ -11,7 +11,7 @@ func TestIntegrationPlayerHandler(t *testing.T) {
 	defer cleanup()
 	store, err := NewFileSystemPlayerStore(database)
 	assertNoError(t, err)
-	server := NewPlayerServer(store)
+	server := mustMakePlayerServer(t, store)
 
 	player := "Alpha"
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
