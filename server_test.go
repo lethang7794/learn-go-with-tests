@@ -43,6 +43,26 @@ func TestGame(t *testing.T) {
 		time.Sleep(10 * time.Millisecond) // TODO: remove
 		assertWinner(t, store, winner)
 	})
+
+	t.Run("start a game with 3 players and declare Ruth the winner", func(t *testing.T) {
+		winner := "Ruth"
+		gameSpy := &GameSpy{}
+		store := &StubPlayerStore{}
+		server := mustMakePlayerServer(t, store, gameSpy)
+		testServer := httptest.NewServer(server)
+		defer testServer.Close()
+
+		wsURl := "ws" + strings.TrimPrefix(testServer.URL, "http") + "/ws"
+		ws := mustMakeWebSocketConn(t, wsURl)
+		defer ws.Close()
+
+		writeWsMessage(t, ws, "3")
+		writeWsMessage(t, ws, winner)
+
+		time.Sleep(10 * time.Millisecond) // TODO: remove
+		assertGameStartWith(t, gameSpy, 3)
+		assertGameFinishWith(t, gameSpy, winner)
+	})
 }
 
 func TestGETPlayers(t *testing.T) {
