@@ -14,7 +14,7 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("5\nAndy wins")
 		store := &StubPlayerStore{}
 		alerter := &SpyBlindAlerter{}
-		game := NewGame(store, alerter)
+		game := NewTexasHoldem(store, alerter)
 		cli := NewCLI(in, os.Stdout, game)
 
 		cli.PlayPoker()
@@ -26,7 +26,7 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("5\nBob wins")
 		store := &StubPlayerStore{}
 		alerter := &SpyBlindAlerter{}
-		game := NewGame(store, alerter)
+		game := NewTexasHoldem(store, alerter)
 		cli := NewCLI(in, os.Stdout, game)
 
 		cli.PlayPoker()
@@ -38,7 +38,7 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("5\nCharlie wins")
 		store := &StubPlayerStore{}
 		spyBlindAlerter := &SpyBlindAlerter{}
-		game := NewGame(store, spyBlindAlerter)
+		game := NewTexasHoldem(store, spyBlindAlerter)
 		cli := NewCLI(in, os.Stdout, game)
 
 		cli.PlayPoker()
@@ -75,7 +75,7 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("7\n")
 		out := &bytes.Buffer{}
 		alerter := &SpyBlindAlerter{}
-		game := NewGame(store, alerter)
+		game := NewTexasHoldem(store, alerter)
 		cli := NewCLI(in, out, game)
 
 		cli.PlayPoker()
