@@ -10,16 +10,19 @@ import (
 type CLI struct {
 	store   PlayerStore
 	scanner *bufio.Scanner
+	alerter Alerter
 }
 
 func NewCLI(store PlayerStore, in io.Reader, alerter Alerter) *CLI {
 	return &CLI{
 		store:   store,
 		scanner: bufio.NewScanner(in),
+		alerter: alerter,
 	}
 }
 
 func (c *CLI) PlayPoker() {
+	c.alerter.ScheduleAlertAt(5*time.Second, 100)
 	line := c.readLine()
 	winner := extractWinner(line)
 	c.store.RecordWin(winner)
@@ -46,7 +49,7 @@ type SpyBlindAlerter struct {
 	}
 }
 
-func (a SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
+func (a *SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
 	a.alerts = append(a.alerts, struct {
 		scheduledAt time.Duration
 		amount      int
