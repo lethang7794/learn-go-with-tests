@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"strings"
 
@@ -33,13 +32,13 @@ type PlayerServer struct {
 }
 
 // NewPlayerServer creates a PlayerServer with routing configured
-func NewPlayerServer(store PlayerStore) *PlayerServer {
+func NewPlayerServer(store PlayerStore) (*PlayerServer, error) {
 	server := new(PlayerServer)
 	server.store = store
 
 	tmpl, err := template.ParseFiles(htmlTemplatePath)
 	if err != nil {
-		log.Fatalf("could not parse template file: %s", err)
+		return nil, fmt.Errorf("could not parse template file: %s", err)
 	}
 	server.template = tmpl
 
@@ -52,7 +51,7 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 
 	server.Handler = router
 
-	return server
+	return server, nil
 }
 
 const jsonContentType = "application/json"

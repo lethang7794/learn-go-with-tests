@@ -15,7 +15,10 @@ func main() {
 		log.Fatal(err)
 	}
 	defer cleanup()
-	server := poker.NewPlayerServer(store)
+	server, err := poker.NewPlayerServer(store)
+	if err != nil {
+		log.Fatal(err)
+	}
 	err = http.ListenAndServe(":5000", server)
 	if err != nil {
 		log.Fatal(err)
