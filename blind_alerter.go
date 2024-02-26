@@ -10,10 +10,13 @@ type BlindAlerter interface {
 	ScheduleAlertAt(duration time.Duration, amount int)
 }
 
-type BlindAlert struct {
+type BlindAlerterFunc func(duration time.Duration, amount int)
+
+func (fn BlindAlerterFunc) ScheduleAlertAt(duration time.Duration, amount int) {
+	fn(duration, amount)
 }
 
-func (b BlindAlert) ScheduleAlertAt(duration time.Duration, amount int) {
+func StdOutBlindAlerter(duration time.Duration, amount int) {
 	time.AfterFunc(duration, func() {
 		fmt.Fprintf(os.Stdout, "Blind is now %v\n", amount)
 	})
