@@ -1,7 +1,9 @@
 package poker
 
 import (
+	"bytes"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -12,7 +14,7 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("Andy wins")
 		store := &StubPlayerStore{}
 		alerter := &SpyBlindAlerter{}
-		cli := NewCLI(store, in, alerter)
+		cli := NewCLI(store, in, os.Stdout, alerter)
 
 		cli.PlayPoker()
 
@@ -23,7 +25,7 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("Bob wins")
 		store := &StubPlayerStore{}
 		alerter := &SpyBlindAlerter{}
-		cli := NewCLI(store, in, alerter)
+		cli := NewCLI(store, in, os.Stdout, alerter)
 
 		cli.PlayPoker()
 
@@ -34,7 +36,7 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("Charlie wins")
 		store := &StubPlayerStore{}
 		spyBlindAlerter := &SpyBlindAlerter{}
-		cli := NewCLI(store, in, spyBlindAlerter)
+		cli := NewCLI(store, in, os.Stdout, spyBlindAlerter)
 
 		cli.PlayPoker()
 
