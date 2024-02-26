@@ -68,11 +68,11 @@ func TestCLI(t *testing.T) {
 	})
 
 	t.Run("its prompt the user to enter the number of players", func(t *testing.T) {
-		dummyStore := &StubPlayerStore{}
-		dummyIn := &bytes.Buffer{}
+		store := &StubPlayerStore{}
+		in := strings.NewReader("7\n")
 		out := &bytes.Buffer{}
-		dummyAlerter := &SpyBlindAlerter{}
-		cli := NewCLI(dummyStore, dummyIn, out, dummyAlerter)
+		alerter := &SpyBlindAlerter{}
+		cli := NewCLI(store, in, out, alerter)
 
 		cli.PlayPoker()
 
@@ -81,6 +81,27 @@ func TestCLI(t *testing.T) {
 		if got != want {
 			t.Errorf("got %#v, want %#v", got, want)
 		}
+
+		tt := []scheduledAlert{
+			{0, 100},
+			{12, 200},
+			{24, 300},
+			{36, 400},
+		}
+
+		for i, c := range tt {
+			name := fmt.Sprintf("%v schedule for %v", c.amount, c.scheduledAt)
+			t.Run(name, func(t *testing.T) {
+				if len(alerter.alerts) <= i {
+					t.Fatalf("alert %v (%v) was not scheduled: %v", i, c.amount, alerter.alerts)
+				}
+
+				alert := alerter.alerts[i]
+
+				assertScheduledAlert(t, alert, c)
+			})
+		}
+
 	})
 }
 
