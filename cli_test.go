@@ -30,6 +30,36 @@ func TestCLI(t *testing.T) {
 		assertGameNotStarted(t, gameSpy)
 		assertMessageSendToUser(t, out, UserPrompt+BadInputErrMsg)
 	})
+
+	t.Run("start game with 3 players and finish game with 'Chris' as winner", func(t *testing.T) {
+		in := strings.NewReader("3\nChris wins")
+		out := &bytes.Buffer{}
+		gameSpy := &GameSpy{}
+		cli := NewCLI(in, out, gameSpy)
+
+		cli.PlayPoker()
+
+		assertGameStartWith(t, gameSpy, 3)
+		assertGameFinishWith(t, gameSpy, "Chris")
+	})
+
+	t.Run("start game with 8 players and finish game with 'James' as winner", func(t *testing.T) {
+		in := strings.NewReader("8\nJames wins")
+		out := &bytes.Buffer{}
+		gameSpy := &GameSpy{}
+		cli := NewCLI(in, out, gameSpy)
+
+		cli.PlayPoker()
+
+		assertGameStartWith(t, gameSpy, 8)
+		assertGameFinishWith(t, gameSpy, "James")
+	})
+}
+
+func assertGameFinishWith(t *testing.T, gameSpy *GameSpy, winner string) {
+	if gameSpy.FinishedWith != winner {
+		t.Errorf("got %#v, winner %#v", gameSpy.FinishedWith, winner)
+	}
 }
 
 func assertGameNotStarted(t *testing.T, gameSpy *GameSpy) {
@@ -39,9 +69,9 @@ func assertGameNotStarted(t *testing.T, gameSpy *GameSpy) {
 	}
 }
 
-func assertMessageSendToUser(t *testing.T, out *bytes.Buffer, msgs ...string) {
+func assertMessageSendToUser(t *testing.T, out *bytes.Buffer, messages ...string) {
 	t.Helper()
-	message := strings.Join(msgs, "")
+	message := strings.Join(messages, "")
 	if out.String() != message {
 		t.Errorf("got %#v, want %#v", out.String(), message)
 	}
