@@ -30,10 +30,10 @@ func (c *CLI) PlayPoker() {
 	line := c.readLine()
 	numberOfPlayers, _ := strconv.Atoi(line)
 
-	c.game.StartGame(numberOfPlayers)
+	c.game.Start(numberOfPlayers)
 	line = c.readLine()
 	winner := extractWinner(line)
-	c.game.FinishGame(winner)
+	c.game.Finish(winner)
 }
 
 func (c *CLI) readLine() string {

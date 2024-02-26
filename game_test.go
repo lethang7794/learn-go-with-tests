@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-func TestGame_StartGame(t *testing.T) {
+func TestGame_Start(t *testing.T) {
 	t.Run("schedules alert on game start for 5 players", func(t *testing.T) {
 		store := &StubPlayerStore{}
 		alerter := &SpyBlindAlerter{}
 		game := NewGame(store, alerter)
 
-		game.StartGame(5)
+		game.Start(5)
 
 		tt := []scheduledAlert{
 			{0 * time.Minute, 100},
@@ -36,7 +36,7 @@ func TestGame_StartGame(t *testing.T) {
 		alerter := &SpyBlindAlerter{}
 		game := NewGame(store, alerter)
 
-		game.StartGame(7)
+		game.Start(7)
 
 		tt := []scheduledAlert{
 			{0 * time.Minute, 100},
@@ -49,13 +49,13 @@ func TestGame_StartGame(t *testing.T) {
 	})
 }
 
-func TestGame_FinishGame(t *testing.T) {
+func TestGame_Finish(t *testing.T) {
 	t.Run("Record Andy wins", func(t *testing.T) {
 		store := &StubPlayerStore{}
 		alerter := &SpyBlindAlerter{}
 		game := NewGame(store, alerter)
 
-		game.FinishGame("Andy")
+		game.Finish("Andy")
 
 		assertWinner(t, store, "Andy")
 	})
