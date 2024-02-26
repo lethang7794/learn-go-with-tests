@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"strings"
 
@@ -96,7 +97,14 @@ var upgrader = websocket.Upgrader{
 }
 
 func (p *PlayerServer) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
-	conn, _ := upgrader.Upgrade(w, r, nil)
-	_, message, _ := conn.ReadMessage()
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print(err)
+	}
+
+	_, message, err := conn.ReadMessage()
+	if err != nil {
+		log.Print(err)
+	}
 	p.store.RecordWin(string(message))
 }
