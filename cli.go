@@ -11,10 +11,10 @@ import (
 type CLI struct {
 	store   PlayerStore
 	scanner *bufio.Scanner
-	alerter Alerter
+	alerter BlindAlerter
 }
 
-func NewCLI(store PlayerStore, in io.Reader, alerter Alerter) *CLI {
+func NewCLI(store PlayerStore, in io.Reader, alerter BlindAlerter) *CLI {
 	return &CLI{
 		store:   store,
 		scanner: bufio.NewScanner(in),
@@ -47,10 +47,6 @@ func (c *CLI) readLine() string {
 func extractWinner(line string) string {
 	winner := strings.Replace(line, " wins", "", 1)
 	return winner
-}
-
-type Alerter interface {
-	ScheduleAlertAt(duration time.Duration, amount int)
 }
 
 type scheduledAlert struct {

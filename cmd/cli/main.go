@@ -20,6 +20,7 @@ func main() {
 	}
 	defer cleanup()
 
-	game := poker.NewCLI(store, os.Stdin, nil)
+	alert := &poker.BlindAlert{}
+	game := poker.NewCLI(store, os.Stdin, alert)
 	game.PlayPoker()
 }
