@@ -3,6 +3,7 @@ package poker
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strings"
 )
@@ -34,6 +35,7 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 
 	router.HandleFunc("/players/", server.PlayersHandler)
 	router.HandleFunc("/league", server.LeagueHandler)
+	router.HandleFunc("/game", server.GameHandler)
 
 	server.Handler = router
 
@@ -70,4 +72,12 @@ func (p *PlayerServer) ShowScore(writer http.ResponseWriter, player string) {
 func (p *PlayerServer) ProcessWin(writer http.ResponseWriter, player string) {
 	writer.WriteHeader(http.StatusAccepted)
 	p.store.RecordWin(player)
+}
+
+func (p *PlayerServer) GameHandler(writer http.ResponseWriter, request *http.Request) {
+	files, err := template.ParseFiles("game.html")
+	if err != nil {
+		http.Error(writer, fmt.Sprintf("could not parse template file: %s", err.Error()), http.StatusInternalServerError)
+	}
+	files.Execute(writer, nil)
 }
