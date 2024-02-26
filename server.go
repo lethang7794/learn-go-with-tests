@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"strings"
 
 	"github.com/gorilla/websocket"
 )
+
+const htmlTemplatePath = "game.html"
 
 // PlayerStore stores score information about players
 type PlayerStore interface {
@@ -26,12 +29,19 @@ type Player struct {
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
+	template *template.Template
 }
 
 // NewPlayerServer creates a PlayerServer with routing configured
 func NewPlayerServer(store PlayerStore) *PlayerServer {
 	server := new(PlayerServer)
 	server.store = store
+
+	tmpl, err := template.ParseFiles(htmlTemplatePath)
+	if err != nil {
+		log.Fatalf("could not parse template file: %s", err)
+	}
+	server.template = tmpl
 
 	router := http.NewServeMux()
 
@@ -78,11 +88,7 @@ func (p *PlayerServer) ProcessWin(writer http.ResponseWriter, player string) {
 }
 
 func (p *PlayerServer) GameHandler(writer http.ResponseWriter, request *http.Request) {
-	files, err := template.ParseFiles("game.html")
-	if err != nil {
-		http.Error(writer, fmt.Sprintf("could not parse template file: %s", err.Error()), http.StatusInternalServerError)
-	}
-	files.Execute(writer, nil)
+	p.template.Execute(writer, nil)
 }
 
 var upgrader = websocket.Upgrader{
