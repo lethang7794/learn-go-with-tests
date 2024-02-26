@@ -64,6 +64,22 @@ func TestCLI(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("its prompt the user to enter the number of players", func(t *testing.T) {
+		dummyStore := &StubPlayerStore{}
+		dummyIn := &bytes.Buffer{}
+		out := &bytes.Buffer{}
+		dummyAlerter := &SpyBlindAlerter{}
+		cli := NewCLI(dummyStore, dummyIn, out, dummyAlerter)
+
+		cli.PlayPoker()
+
+		got := out.String()
+		want := "Please enter the number of users: "
+		if got != want {
+			t.Errorf("got %#v, want %#v", got, want)
+		}
+	})
 }
 
 func assertScheduledAlert(t *testing.T, alert scheduledAlert, c scheduledAlert) {
