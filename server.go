@@ -6,6 +6,8 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
+
+	"github.com/gorilla/websocket"
 )
 
 // PlayerStore stores score information about players
@@ -33,9 +35,10 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 
 	router := http.NewServeMux()
 
-	router.HandleFunc("/players/", server.PlayersHandler)
-	router.HandleFunc("/league", server.LeagueHandler)
-	router.HandleFunc("/game", server.GameHandler)
+	router.Handle("/players/", http.HandlerFunc(server.PlayersHandler))
+	router.Handle("/league", http.HandlerFunc(server.LeagueHandler))
+	router.Handle("/game", http.HandlerFunc(server.GameHandler))
+	router.Handle("/ws", http.HandlerFunc(server.WebSocketHandler))
 
 	server.Handler = router
 
@@ -80,4 +83,14 @@ func (p *PlayerServer) GameHandler(writer http.ResponseWriter, request *http.Req
 		http.Error(writer, fmt.Sprintf("could not parse template file: %s", err.Error()), http.StatusInternalServerError)
 	}
 	files.Execute(writer, nil)
+}
+
+func (p *PlayerServer) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+	conn, _ := upgrader.Upgrade(w, r, nil)
+	_, message, _ := conn.ReadMessage()
+	p.store.RecordWin(string(message))
 }
