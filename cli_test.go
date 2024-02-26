@@ -34,7 +34,7 @@ func TestCLI(t *testing.T) {
 		cli.PlayPoker()
 
 		if gameSpy.Started == true {
-			t.Errorf("Expected game not started, but it does")
+			t.Errorf("game should have not started")
 		}
 
 		wantPrompt := userPrompt + "(You're so silly)"
