@@ -30,12 +30,14 @@ type PlayerServer struct {
 	store PlayerStore
 	http.Handler
 	template *template.Template
+	game     Game
 }
 
 // NewPlayerServer creates a PlayerServer with routing configured
-func NewPlayerServer(store PlayerStore) (*PlayerServer, error) {
+func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
 	server := new(PlayerServer)
 	server.store = store
+	server.game = game
 
 	tmpl, err := template.ParseFiles(htmlTemplatePath)
 	if err != nil {

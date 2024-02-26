@@ -211,7 +211,7 @@ func assertResponseHeaderContentType(t *testing.T, response http.ResponseWriter)
 
 func mustMakePlayerServer(t *testing.T, store PlayerStore, game Game) *PlayerServer {
 	t.Helper()
-	server, err := NewPlayerServer(store)
+	server, err := NewPlayerServer(store, game)
 	if err != nil {
 		t.Fatalf("could not create player server: %v", err)
 	}
