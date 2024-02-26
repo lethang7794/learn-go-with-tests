@@ -32,11 +32,8 @@ func TestGame(t *testing.T) {
 		defer testServer.Close()
 
 		wsURl := "ws" + strings.TrimPrefix(testServer.URL, "http") + "/ws"
-		conn, _, err := websocket.DefaultDialer.Dial(wsURl, nil)
-		if err != nil {
-			t.Fatalf("could not open WebSocket connection: %v", err)
-		}
-		defer conn.Close()
+		conn, cleanup, err := mustMakeWebSocketConn(t, wsURl)
+		defer cleanup()
 
 		err = conn.WriteMessage(websocket.TextMessage, []byte(winner))
 		if err != nil {
@@ -202,4 +199,14 @@ func mustMakePlayerServer(t *testing.T, store PlayerStore) *PlayerServer {
 		t.Fatalf("could not create player server: %v", err)
 	}
 	return server
+}
+
+func mustMakeWebSocketConn(t *testing.T, wsURl string) (_ *websocket.Conn, cleanup func(), _ error) {
+	conn, _, err := websocket.DefaultDialer.Dial(wsURl, nil)
+	if err != nil {
+		t.Fatalf("could not open WebSocket connection: %v", err)
+	}
+	return conn, func() {
+		conn.Close()
+	}, err
 }
