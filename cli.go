@@ -41,7 +41,7 @@ func (c *CLI) PlayPoker() {
 		return
 	}
 
-	c.game.Start(numberOfPlayers)
+	c.game.Start(numberOfPlayers, c.out)
 	line = c.readLine()
 	winner, err := extractWinner(line)
 	if errors.Is(err, ErrInvalidInputWinner) {

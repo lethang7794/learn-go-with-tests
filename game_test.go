@@ -2,6 +2,7 @@ package poker
 
 import (
 	"fmt"
+	"io"
 	"testing"
 	"time"
 )
@@ -12,7 +13,7 @@ func TestGame_Start(t *testing.T) {
 		alerter := &SpyBlindAlerter{}
 		game := NewTexasHoldem(store, alerter)
 
-		game.Start(5)
+		game.Start(5, io.Discard)
 
 		tt := []scheduledAlert{
 			{0 * time.Minute, 100},
@@ -36,7 +37,7 @@ func TestGame_Start(t *testing.T) {
 		alerter := &SpyBlindAlerter{}
 		game := NewTexasHoldem(store, alerter)
 
-		game.Start(7)
+		game.Start(7, io.Discard)
 
 		tt := []scheduledAlert{
 			{0 * time.Minute, 100},
