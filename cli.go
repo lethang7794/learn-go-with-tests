@@ -17,11 +17,11 @@ type CLI struct {
 	game *Game
 }
 
-func NewCLI(in io.Reader, out io.Writer, store PlayerStore, alerter BlindAlerter) *CLI {
+func NewCLI(in io.Reader, out io.Writer, game *Game) *CLI {
 	return &CLI{
 		in:   bufio.NewScanner(in),
 		out:  out,
-		game: NewGame(store, alerter),
+		game: game,
 	}
 }
 
