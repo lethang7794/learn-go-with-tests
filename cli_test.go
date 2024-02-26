@@ -15,8 +15,8 @@ func TestCLI(t *testing.T) {
 
 		cli.PlayPoker()
 
-		if out.String() != userPrompt {
-			t.Errorf("got %#v, want %#v", out.String(), userPrompt)
+		if out.String() != UserPrompt {
+			t.Errorf("got %#v, want %#v", out.String(), UserPrompt)
 		}
 
 		if gameSpy.StartsWith != 7 {
@@ -37,7 +37,7 @@ func TestCLI(t *testing.T) {
 			t.Errorf("game should have not started")
 		}
 
-		wantPrompt := userPrompt + "(You're so silly)"
+		wantPrompt := UserPrompt + BadInputErrMsg
 		if out.String() != wantPrompt {
 			t.Errorf("got %#v, want %#v", out.String(), wantPrompt)
 		}

@@ -9,7 +9,8 @@ import (
 	"time"
 )
 
-const userPrompt = "Please enter the number of users: "
+const UserPrompt = "Please enter the number of users: "
+const BadInputErrMsg = "Bad value received for number of players, please try again with a number"
 
 type CLI struct {
 	in   *bufio.Scanner
@@ -26,11 +27,11 @@ func NewCLI(in io.Reader, out io.Writer, game Game) *CLI {
 }
 
 func (c *CLI) PlayPoker() {
-	fmt.Fprintf(c.out, userPrompt)
+	fmt.Fprintf(c.out, UserPrompt)
 	line := c.readLine()
 	numberOfPlayers, err := strconv.Atoi(line)
 	if err != nil {
-		fmt.Fprintf(c.out, "(You're so silly)")
+		fmt.Fprintf(c.out, BadInputErrMsg)
 		return
 	}
 
