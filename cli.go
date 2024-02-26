@@ -14,17 +14,14 @@ const userPrompt = "Please enter the number of users: "
 type CLI struct {
 	in   *bufio.Scanner
 	out  io.Writer
-	game Game
+	game *Game
 }
 
-func NewCLI(store PlayerStore, in io.Reader, out io.Writer, alerter BlindAlerter) *CLI {
+func NewCLI(in io.Reader, out io.Writer, store PlayerStore, alerter BlindAlerter) *CLI {
 	return &CLI{
-		in:  bufio.NewScanner(in),
-		out: out,
-		game: Game{
-			store:   store,
-			alerter: alerter,
-		},
+		in:   bufio.NewScanner(in),
+		out:  out,
+		game: NewGame(store, alerter),
 	}
 }
 

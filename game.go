@@ -7,6 +7,10 @@ type Game struct {
 	alerter BlindAlerter
 }
 
+func NewGame(store PlayerStore, alerter BlindAlerter) *Game {
+	return &Game{store: store, alerter: alerter}
+}
+
 func (g Game) StartGame(numberOfPlayers int) {
 	const baseTime = 5
 	blindIncrement := time.Duration(baseTime+numberOfPlayers) * time.Minute
