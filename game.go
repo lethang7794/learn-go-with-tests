@@ -34,10 +34,12 @@ func (g TexasHoldem) Finish(winner string) {
 type GameSpy struct {
 	StartsWith   int
 	FinishesWith string
+	Started      bool
 }
 
 func (g *GameSpy) Start(numberOfPlayers int) {
 	g.StartsWith = numberOfPlayers
+	g.Started = true
 }
 
 func (g *GameSpy) Finish(winner string) {
