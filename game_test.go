@@ -61,6 +61,26 @@ func TestGame_Finish(t *testing.T) {
 	})
 }
 
+func assertScheduledAlert(t *testing.T, alert scheduledAlert, c scheduledAlert) {
+	t.Helper()
+	if alert.amount != c.amount {
+		t.Errorf("got %#v, want %#v", alert.amount, c.amount)
+	}
+	if alert.scheduledAt != c.scheduledAt {
+		t.Errorf("got %#v, want %#v", alert.scheduledAt, c.scheduledAt)
+	}
+}
+
+func assertWinner(t *testing.T, store *StubPlayerStore, winner string) {
+	t.Helper()
+	if len(store.winCalls) != 1 {
+		t.Errorf("winner win to be called once, but it's called %v times (%v)", len(store.winCalls), store.winCalls)
+	}
+	if store.winCalls[0] != winner {
+		t.Errorf("got %#v, winner %#v", store.winCalls[0], winner)
+	}
+}
+
 func assertScheduledAlerts(t *testing.T, tt []scheduledAlert, alerter *SpyBlindAlerter) {
 	for i, c := range tt {
 		name := fmt.Sprintf("%v schedule for %v", c.amount, c.scheduledAt)
