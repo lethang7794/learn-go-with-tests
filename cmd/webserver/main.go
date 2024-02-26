@@ -7,7 +7,7 @@ import (
 	poker "github.com/lethang7794/learn-go-with-tests"
 )
 
-const dbFileName = "game.db.json"
+const dbFileName = "../game.db.json"
 
 func main() {
 	store, cleanup, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
