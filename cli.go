@@ -2,8 +2,10 @@ package poker
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -11,6 +13,10 @@ import (
 
 const UserPrompt = "Please enter the number of users: "
 const BadInputErrMsg = "Bad value received for number of players, please try again with a number"
+const BadWinnerErrorMsg = `Bad value received for winner, type "{Name} wins" to record a win`
+
+var ErrInvalidInputWinner = errors.New("invalid input winner")
+var ErrNotEnoughInputWinner = errors.New("not enough input for winner")
 
 type CLI struct {
 	in   *bufio.Scanner
@@ -37,7 +43,11 @@ func (c *CLI) PlayPoker() {
 
 	c.game.Start(numberOfPlayers)
 	line = c.readLine()
-	winner := extractWinner(line)
+	winner, err := extractWinner(line)
+	if errors.Is(err, ErrInvalidInputWinner) {
+		fmt.Fprintf(c.out, BadWinnerErrorMsg)
+		return
+	}
 	c.game.Finish(winner)
 
 }
@@ -47,9 +57,18 @@ func (c *CLI) readLine() string {
 	return c.in.Text()
 }
 
-func extractWinner(line string) string {
+func extractWinner(line string) (string, error) {
+	line = strings.TrimSpace(line)
+	if len(line) == 0 {
+		return "", ErrNotEnoughInputWinner
+	}
+	re := regexp.MustCompile(`\w+ wins`)
+	found := re.Find([]byte(line))
+	if found == nil {
+		return "", ErrInvalidInputWinner
+	}
 	winner := strings.Replace(line, " wins", "", 1)
-	return winner
+	return winner, nil
 }
 
 type scheduledAlert struct {

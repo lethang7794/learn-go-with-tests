@@ -54,6 +54,18 @@ func TestCLI(t *testing.T) {
 		assertGameStartWith(t, gameSpy, 8)
 		assertGameFinishWith(t, gameSpy, "James")
 	})
+
+	t.Run(`when user not enter "{Name} wins", show an error message`, func(t *testing.T) {
+		in := strings.NewReader("8\nYou're so silly")
+		out := &bytes.Buffer{}
+		gameSpy := &GameSpy{}
+		cli := NewCLI(in, out, gameSpy)
+
+		cli.PlayPoker()
+
+		assertGameStartWith(t, gameSpy, 8)
+		assertMessageSendToUser(t, out, UserPrompt, BadWinnerErrorMsg)
+	})
 }
 
 func assertGameFinishWith(t *testing.T, gameSpy *GameSpy, winner string) {
