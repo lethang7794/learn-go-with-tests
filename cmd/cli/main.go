@@ -20,6 +20,6 @@ func main() {
 	}
 	defer cleanup()
 
-	game := poker.NewCLI(store, os.Stdin)
+	game := poker.NewCLI(store, os.Stdin, nil)
 	game.PlayPoker()
 }

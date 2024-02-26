@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"strings"
+	"time"
 )
 
 type CLI struct {
@@ -11,7 +12,7 @@ type CLI struct {
 	scanner *bufio.Scanner
 }
 
-func NewCLI(store PlayerStore, in io.Reader) *CLI {
+func NewCLI(store PlayerStore, in io.Reader, alerter Alerter) *CLI {
 	return &CLI{
 		store:   store,
 		scanner: bufio.NewScanner(in),
@@ -32,4 +33,22 @@ func (c *CLI) readLine() string {
 func extractWinner(line string) string {
 	winner := strings.Replace(line, " wins", "", 1)
 	return winner
+}
+
+type Alerter interface {
+	ScheduleAlertAt(duration time.Duration, amount int)
+}
+
+type SpyBlindAlerter struct {
+	alerts []struct {
+		scheduledAt time.Duration
+		amount      int
+	}
+}
+
+func (a SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
+	a.alerts = append(a.alerts, struct {
+		scheduledAt time.Duration
+		amount      int
+	}{scheduledAt: duration, amount: amount})
 }
