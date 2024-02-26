@@ -11,7 +11,7 @@ import (
 
 func TestCLI(t *testing.T) {
 	t.Run("Record Andy wins", func(t *testing.T) {
-		in := strings.NewReader("Andy wins")
+		in := strings.NewReader("5\nAndy wins")
 		store := &StubPlayerStore{}
 		alerter := &SpyBlindAlerter{}
 		cli := NewCLI(store, in, os.Stdout, alerter)
@@ -22,7 +22,7 @@ func TestCLI(t *testing.T) {
 	})
 
 	t.Run("Record Bob wins", func(t *testing.T) {
-		in := strings.NewReader("Bob wins")
+		in := strings.NewReader("5\nBob wins")
 		store := &StubPlayerStore{}
 		alerter := &SpyBlindAlerter{}
 		cli := NewCLI(store, in, os.Stdout, alerter)
@@ -33,7 +33,7 @@ func TestCLI(t *testing.T) {
 	})
 
 	t.Run("it schedules printing of blinding values", func(t *testing.T) {
-		in := strings.NewReader("Charlie wins")
+		in := strings.NewReader("5\nCharlie wins")
 		store := &StubPlayerStore{}
 		spyBlindAlerter := &SpyBlindAlerter{}
 		cli := NewCLI(store, in, os.Stdout, spyBlindAlerter)
@@ -83,10 +83,10 @@ func TestCLI(t *testing.T) {
 		}
 
 		tt := []scheduledAlert{
-			{0, 100},
-			{12, 200},
-			{24, 300},
-			{36, 400},
+			{0 * time.Minute, 100},
+			{12 * time.Minute, 200},
+			{24 * time.Minute, 300},
+			{36 * time.Minute, 400},
 		}
 
 		for i, c := range tt {
