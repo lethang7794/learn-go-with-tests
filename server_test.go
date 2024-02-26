@@ -5,7 +5,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"slices"
+	"strings"
 	"testing"
+
+	"github.com/gorilla/websocket"
 )
 
 func TestGame(t *testing.T) {
@@ -18,6 +21,28 @@ func TestGame(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseCode(t, response.Code, http.StatusOK)
+	})
+
+	t.Run("when we get a message over WebSocket, it's a winner of a game", func(t *testing.T) {
+		winner := "Ruth"
+		store := &StubPlayerStore{}
+		server := NewPlayerServer(store)
+		testServer := httptest.NewServer(server.Handler)
+		defer testServer.Close()
+
+		wsURl := "ws" + strings.TrimPrefix(testServer.URL, "http") + "/ws"
+		conn, _, err := websocket.DefaultDialer.Dial(wsURl, nil)
+		if err != nil {
+			t.Fatalf("could not open WebSocket connection: %v", err)
+		}
+		defer conn.Close()
+
+		err = conn.WriteMessage(websocket.TextMessage, []byte(winner))
+		if err != nil {
+			t.Fatalf("could not send message over WebSocket connection: %v", err)
+		}
+
+		assertWinner(t, store, winner)
 	})
 }
 
