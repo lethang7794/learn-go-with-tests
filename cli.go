@@ -17,11 +17,6 @@ type CLI struct {
 	game Game
 }
 
-type Game struct {
-	store   PlayerStore
-	alerter BlindAlerter
-}
-
 func NewCLI(store PlayerStore, in io.Reader, out io.Writer, alerter BlindAlerter) *CLI {
 	return &CLI{
 		in:  bufio.NewScanner(in),
@@ -37,21 +32,11 @@ func (c *CLI) PlayPoker() {
 	fmt.Fprintf(c.out, userPrompt)
 	line := c.readLine()
 	numberOfPlayers, _ := strconv.Atoi(line)
-	c.scheduleBlindAlerts(numberOfPlayers)
+
+	c.game.StartGame(numberOfPlayers)
 	line = c.readLine()
 	winner := extractWinner(line)
-	c.game.store.RecordWin(winner)
-}
-
-func (c *CLI) scheduleBlindAlerts(numberOfPlayers int) {
-	const baseTime = 5
-	blindIncrement := time.Duration(baseTime+numberOfPlayers) * time.Minute
-	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
-	blindTime := 0 * time.Second
-	for _, blind := range blinds {
-		c.game.alerter.ScheduleAlertAt(blindTime, blind)
-		blindTime += blindIncrement
-	}
+	c.game.FinishGame(winner)
 }
 
 func (c *CLI) readLine() string {
