@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -95,13 +94,13 @@ func (p *PlayerServer) GameHandler(writer http.ResponseWriter, request *http.Req
 	p.template.Execute(writer, nil)
 }
 
+type playerServerWS struct {
+	conn *websocket.Conn
+}
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-}
-
-type playerServerWS struct {
-	conn *websocket.Conn
 }
 
 func newPlayerServerWS(w http.ResponseWriter, r *http.Request) *playerServerWS {
@@ -120,12 +119,20 @@ func (w playerServerWS) WaitForMessage() string {
 	return string(message)
 }
 
+func (w playerServerWS) Write(p []byte) (n int, err error) {
+	err = w.conn.WriteMessage(websocket.TextMessage, p)
+	if err != nil {
+		return 0, err
+	}
+	return len(p), nil
+}
+
 func (p *PlayerServer) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	ws := newPlayerServerWS(w, r)
 
 	message := ws.WaitForMessage()
 	numberOfPlayer, _ := strconv.Atoi(message)
-	p.game.Start(numberOfPlayer, io.Discard) // TODO: send alert to ...
+	p.game.Start(numberOfPlayer, ws)
 
 	message = ws.WaitForMessage()
 	p.game.Finish(message)
