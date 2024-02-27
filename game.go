@@ -37,13 +37,15 @@ func (g TexasHoldem) Finish(winner string) {
 type GameSpy struct {
 	StartCalled     bool
 	StartCalledWith int
+	BlindAlert      []byte
 
 	FinishCalledWith string
 }
 
-func (g *GameSpy) Start(numberOfPlayers int, to io.Writer) {
+func (g *GameSpy) Start(numberOfPlayers int, out io.Writer) {
 	g.StartCalledWith = numberOfPlayers
 	g.StartCalled = true
+	out.Write(g.BlindAlert)
 }
 
 func (g *GameSpy) Finish(winner string) {
