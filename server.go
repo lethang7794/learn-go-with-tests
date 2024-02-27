@@ -100,22 +100,33 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func (p *PlayerServer) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
+type playerServerWS struct {
+	conn *websocket.Conn
+}
+
+func newPlayerServerWS(w http.ResponseWriter, r *http.Request) *playerServerWS {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Print(err)
+		log.Fatal(err)
 	}
+	return &playerServerWS{conn}
+}
 
-	_, message, err := conn.ReadMessage()
+func (w playerServerWS) WaitForMessage() string {
+	_, message, err := w.conn.ReadMessage()
 	if err != nil {
 		log.Print(err)
 	}
-	numberOfPlayer, _ := strconv.Atoi(string(message))
+	return string(message)
+}
+
+func (p *PlayerServer) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
+	ws := newPlayerServerWS(w, r)
+
+	message := ws.WaitForMessage()
+	numberOfPlayer, _ := strconv.Atoi(message)
 	p.game.Start(numberOfPlayer, io.Discard) // TODO: send alert to ...
 
-	_, message, err = conn.ReadMessage()
-	if err != nil {
-		log.Print(err)
-	}
-	p.game.Finish(string(message))
+	message = ws.WaitForMessage()
+	p.game.Finish(message)
 }
