@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"strings"
 	"testing"
 )
@@ -35,7 +36,10 @@ func TestGetMessageFromXML(t *testing.T) {
 
 func TestGetMessageFromXml_XmlReadWithCmd(t *testing.T) {
 	t.Run("returns Happy New Year!", func(t *testing.T) {
-		xml := GetXmlFromCmd("testdata/msg.xml")
+		xml, err := GetXmlFromCmd("testdata/msg.xml")
+		if err != nil {
+			log.Fatal(err)
+		}
 		data := GetMessageFromXml(xml)
 
 		got := data
@@ -48,7 +52,10 @@ func TestGetMessageFromXml_XmlReadWithCmd(t *testing.T) {
 
 func TestGetMessageFromXml_XmlReadWithGo(t *testing.T) {
 	t.Run("returns Happy New Year!", func(t *testing.T) {
-		xml := GetXmlWithGo("testdata/msg.xml")
+		xml, err := GetXmlWithGo("testdata/msg.xml")
+		if err != nil {
+			log.Fatal(err)
+		}
 		data := GetMessageFromXml(xml)
 
 		got := data
