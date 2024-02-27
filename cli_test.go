@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"strings"
 	"testing"
+	"time"
 )
+
+const retryTime = 500 * time.Millisecond
 
 func TestCLI(t *testing.T) {
 	t.Run("prompt the user to enter the number of players & starts the game", func(t *testing.T) {
@@ -69,7 +72,13 @@ func TestCLI(t *testing.T) {
 }
 
 func assertGameFinishWith(t *testing.T, gameSpy *GameSpy, winner string) {
-	if gameSpy.FinishCalledWith != winner {
+	t.Helper()
+
+	passed := retryUntil(retryTime, func() bool {
+		return gameSpy.FinishCalledWith != winner
+	})
+
+	if passed {
 		t.Errorf("got %#v, winner %#v", gameSpy.FinishCalledWith, winner)
 	}
 }
@@ -94,4 +103,14 @@ func assertGameStartWith(t *testing.T, gameSpy *GameSpy, numberOfPlayers int) {
 	if gameSpy.StartCalledWith != numberOfPlayers {
 		t.Errorf("got %#v, want %#v", gameSpy.StartCalledWith, numberOfPlayers)
 	}
+}
+
+func retryUntil(d time.Duration, fn func() bool) bool {
+	deadline := time.Now().Add(d)
+	for time.Now().Before(deadline) {
+		if fn() {
+			return true
+		}
+	}
+	return false
 }
