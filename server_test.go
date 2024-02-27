@@ -12,6 +12,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+const timeOut = 10 * time.Millisecond
+
 func TestGame(t *testing.T) {
 	t.Run("GET /game returns 200", func(t *testing.T) {
 		store := &StubPlayerStore{}
@@ -24,9 +26,11 @@ func TestGame(t *testing.T) {
 		assertResponseCode(t, response.Code, http.StatusOK)
 	})
 
-	t.Run("start a game with 3 players and declare Ruth the winner", func(t *testing.T) {
+	t.Run("start a game with 3 players, send blinks over websocket connection and declare Ruth the winner", func(t *testing.T) {
 		winner := "Ruth"
-		gameSpy := &GameSpy{}
+		wantBlinkAlert := "Blind is 100"
+
+		gameSpy := &GameSpy{BlindAlert: []byte(wantBlinkAlert)}
 		store := &StubPlayerStore{}
 		server := mustMakePlayerServer(t, store, gameSpy)
 		testServer := httptest.NewServer(server)
@@ -39,9 +43,13 @@ func TestGame(t *testing.T) {
 		writeWsMessage(t, ws, "3")
 		writeWsMessage(t, ws, winner)
 
-		time.Sleep(10 * time.Millisecond) // TODO: remove
+		time.Sleep(timeOut) // TODO: remove
 		assertGameStartWith(t, gameSpy, 3)
 		assertGameFinishWith(t, gameSpy, winner)
+
+		within(t, timeOut, func() {
+			assertWebSocketGotMessage(t, ws, wantBlinkAlert)
+		})
 	})
 }
 
@@ -214,5 +222,28 @@ func writeWsMessage(t *testing.T, ws *websocket.Conn, msg string) {
 	err := ws.WriteMessage(websocket.TextMessage, []byte(msg))
 	if err != nil {
 		t.Logf("could not write websocket message: %v", err)
+	}
+}
+
+func within(t *testing.T, d time.Duration, assert func()) {
+	t.Helper()
+	done := make(chan bool, 1)
+	go func() {
+		assert()
+		done <- true
+	}()
+	select {
+	case <-time.After(d):
+		t.Errorf("time out: %v", d)
+	case <-done:
+	}
+
+}
+
+func assertWebSocketGotMessage(t *testing.T, ws *websocket.Conn, message string) {
+	t.Helper()
+	_, msg, _ := ws.ReadMessage()
+	if string(msg) != message {
+		t.Errorf("got %#v, want %#v", string(msg), message)
 	}
 }
