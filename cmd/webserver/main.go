@@ -15,7 +15,8 @@ func main() {
 		log.Fatal(err)
 	}
 	defer cleanup()
-	server, err := poker.NewPlayerServer(store, nil)
+	pokerHoldem := poker.NewTexasHoldem(store, poker.BlindAlerterFunc(poker.Alerter))
+	server, err := poker.NewPlayerServer(store, pokerHoldem)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/websocket"
@@ -108,5 +110,12 @@ func (p *PlayerServer) WebSocketHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		log.Print(err)
 	}
-	p.store.RecordWin(string(message))
+	numberOfPlayer, _ := strconv.Atoi(string(message))
+	p.game.Start(numberOfPlayer, io.Discard) // TODO: send alert to ...
+
+	_, message, err = conn.ReadMessage()
+	if err != nil {
+		log.Print(err)
+	}
+	p.game.Finish(string(message))
 }
