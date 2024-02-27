@@ -69,14 +69,14 @@ func TestCLI(t *testing.T) {
 }
 
 func assertGameFinishWith(t *testing.T, gameSpy *GameSpy, winner string) {
-	if gameSpy.FinishedWith != winner {
-		t.Errorf("got %#v, winner %#v", gameSpy.FinishedWith, winner)
+	if gameSpy.FinishCalledWith != winner {
+		t.Errorf("got %#v, winner %#v", gameSpy.FinishCalledWith, winner)
 	}
 }
 
 func assertGameNotStarted(t *testing.T, gameSpy *GameSpy) {
 	t.Helper()
-	if gameSpy.Started == true {
+	if gameSpy.StartCalled == true {
 		t.Errorf("game should have not started")
 	}
 }
@@ -91,7 +91,7 @@ func assertMessageSendToUser(t *testing.T, out *bytes.Buffer, messages ...string
 
 func assertGameStartWith(t *testing.T, gameSpy *GameSpy, numberOfPlayers int) {
 	t.Helper()
-	if gameSpy.StartedWith != numberOfPlayers {
-		t.Errorf("got %#v, want %#v", gameSpy.StartedWith, numberOfPlayers)
+	if gameSpy.StartCalledWith != numberOfPlayers {
+		t.Errorf("got %#v, want %#v", gameSpy.StartCalledWith, numberOfPlayers)
 	}
 }
