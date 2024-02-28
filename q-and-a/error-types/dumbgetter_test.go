@@ -1,7 +1,7 @@
 package error_types
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,11 +20,17 @@ func TestDumbGetter(t *testing.T) {
 			t.Fatal("expected an error")
 		}
 
-		want := fmt.Sprintf("did not get 200 from %s, got %d", svr.URL, http.StatusTeapot)
-		got := err.Error()
-
-		if got != want {
-			t.Errorf(`got "%v", want "%v"`, got, want)
+		got := err
+		want := BadStatusError{
+			URL:    svr.URL,
+			Status: http.StatusTeapot,
+		}
+		var target BadStatusError
+		if !errors.As(got, &target) {
+			t.Fatalf("got %#v, want %#v", got, want)
+		}
+		if target.Status != http.StatusTeapot {
+			t.Errorf("got %#v, want %#v", got, want)
 		}
 	})
 }
