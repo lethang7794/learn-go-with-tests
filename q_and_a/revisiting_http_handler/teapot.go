@@ -1,13 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
 
 func main() {
-	http.Handle("/", http.HandlerFunc(TeapotHandler))
-	err := http.ListenAndServe(":8080", nil)
+	server := http.Server{
+		Addr:    ":8080",
+		Handler: http.HandlerFunc(TeapotHandler),
+	}
+	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -15,4 +19,5 @@ func main() {
 
 func TeapotHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.WriteHeader(http.StatusTeapot)
+	writer.Write([]byte(fmt.Sprintf("%v %v", http.StatusTeapot, http.StatusText(http.StatusTeapot))))
 }
