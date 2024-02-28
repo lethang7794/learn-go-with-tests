@@ -39,6 +39,29 @@ func TestContextAwareReader(t *testing.T) {
 		}
 		assertBufRead(t, string(buf), n, "456")
 	})
+
+	t.Run("doesn't read after cancelled", func(t *testing.T) {
+		reader := strings.NewReader("123456")
+		ctx, cancel := context.WithCancel(context.Background())
+		reader = NewCancellableReader(ctx, reader)
+		buf := make([]byte, 3)
+
+		n, err := reader.Read(buf)
+		if err != nil {
+			log.Fatalf("could not read from buf: %v", err)
+		}
+		assertBufRead(t, string(buf), n, "123")
+
+		cancel()
+
+		n, err = reader.Read(buf)
+		if err == nil {
+			t.Fatalf("expected an error, but didn't get one")
+		}
+		if n != 0 {
+			t.Errorf("expected 0 bytes to be read, got %v bytes read", n)
+		}
+	})
 }
 
 func assertBufRead(t *testing.T, got string, n int, want string) {
