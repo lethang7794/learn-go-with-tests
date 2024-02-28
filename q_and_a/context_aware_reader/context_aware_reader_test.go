@@ -26,15 +26,15 @@ func TestContextAwareReader(t *testing.T) {
 
 	t.Run("acts as a normal reader", func(t *testing.T) {
 		reader := strings.NewReader("123456")
-		reader = NewCancellableReader(nil, reader)
+		readerCtx := NewCancellableReader(context.Background(), reader)
 		buf := make([]byte, 3)
 
-		n, err := reader.Read(buf)
+		n, err := readerCtx.Read(buf)
 		if err != nil {
 			log.Fatalf("could not read from buf: %v", err)
 		}
 		assertBufRead(t, string(buf), n, "123")
-		n, err = reader.Read(buf)
+		n, err = readerCtx.Read(buf)
 		if err != nil {
 			log.Fatalf("could not read from buf: %v", err)
 		}
@@ -44,10 +44,10 @@ func TestContextAwareReader(t *testing.T) {
 	t.Run("doesn't read after cancelled", func(t *testing.T) {
 		reader := strings.NewReader("123456")
 		ctx, cancel := context.WithCancel(context.Background())
-		reader = NewCancellableReader(ctx, reader)
+		readerCtx := NewCancellableReader(ctx, reader)
 		buf := make([]byte, 3)
 
-		n, err := reader.Read(buf)
+		n, err := readerCtx.Read(buf)
 		if err != nil {
 			log.Fatalf("could not read from buf: %v", err)
 		}
@@ -55,7 +55,7 @@ func TestContextAwareReader(t *testing.T) {
 
 		cancel()
 
-		n, err = reader.Read(buf)
+		n, err = readerCtx.Read(buf)
 		if err == nil {
 			t.Fatalf("expected an error, but didn't get one")
 		}
