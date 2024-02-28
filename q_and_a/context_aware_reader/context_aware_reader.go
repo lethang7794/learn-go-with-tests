@@ -1,7 +1,10 @@
 package context_aware_reader
 
-import "strings"
+import (
+	"context"
+	"strings"
+)
 
-func NewCancellableReader(reader *strings.Reader) *strings.Reader {
+func NewCancellableReader(ctx context.Context, reader *strings.Reader) *strings.Reader {
 	return reader
 }

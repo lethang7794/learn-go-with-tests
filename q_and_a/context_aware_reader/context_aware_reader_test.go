@@ -1,6 +1,7 @@
 package context_aware_reader
 
 import (
+	"context"
 	"log"
 	"strings"
 	"testing"
@@ -25,7 +26,7 @@ func TestContextAwareReader(t *testing.T) {
 
 	t.Run("acts as a normal reader", func(t *testing.T) {
 		reader := strings.NewReader("123456")
-		reader = NewCancellableReader(reader)
+		reader = NewCancellableReader(nil, reader)
 		buf := make([]byte, 3)
 
 		n, err := reader.Read(buf)
