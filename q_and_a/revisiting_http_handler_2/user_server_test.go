@@ -26,7 +26,7 @@ func TestUserServer_RegisterUser(t *testing.T) {
 		}
 		srv := NewUserServer(service)
 		response := httptest.NewRecorder()
-		request := httptest.NewRequest("GET", "/", userToJson(user))
+		request := httptest.NewRequest("POST", "/", userToJson(user))
 
 		srv.RegisterUser(response, request)
 
